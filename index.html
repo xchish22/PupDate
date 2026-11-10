@@ -188,6 +188,10 @@ details summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:14p
 .chk{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--surface);color:var(--accent-ink);font-weight:800;font-size:16px;display:grid;place-items:center;padding:0}
 .chk.on{background:var(--accent);border-color:var(--accent)}
 .row.given .t{color:var(--muted)}
+.clip-pick{display:flex;flex-direction:column;gap:10px;border:1px dashed var(--line);border-radius:14px;padding:12px;background:var(--surface)}
+.clip-row{display:flex;align-items:center;gap:12px}
+#clip_prev{width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--surface2);flex:none}
+.clip-pick input[type=range]{width:100%;accent-color:var(--accent)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;max-width:calc(100% - 32px)}
 .loading{padding:40px 0;color:var(--muted);font:600 20px var(--display)}
 @media (prefers-reduced-motion:no-preference){.panel{animation:up .22s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
@@ -262,7 +266,7 @@ function persistPet(p){
   saveAll();render();
 }
 function removePet(id){
-  S.pets=S.pets.filter(p=>p.id!==id);saveAll();
+  S.pets=S.pets.filter(p=>p.id!==id);saveAll();try{clipDel(id).catch(()=>{});Clips.drop(id)}catch(e){}
   if(prefs.cur===id){prefs.cur=S.pets[0]?S.pets[0].id:null;savePrefs()}
   render();
 }
@@ -270,6 +274,7 @@ function removePet(id){
 /* ---------- backup & restore ---------- */
 async function exportBackup(){
   const data={app:"pupdate",version:DATA_VERSION,appVersion:APP_VERSION,exportedAt:new Date().toISOString(),pets:S.pets};
+  const clips=await clipsForBackup();if(Object.keys(clips).length)data.clips=clips;
   const name="pupdate-backup-"+todayISO()+".json";
   const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
   let done=false;
@@ -281,11 +286,12 @@ async function exportBackup(){
 }
 function importBackup(file){
   const r=new FileReader();
-  r.onload=()=>{let d;try{d=JSON.parse(r.result)}catch(e){toast("That file isn't a Pupdate backup.");return}
+  r.onload=async()=>{let d;try{d=JSON.parse(r.result)}catch(e){toast("That file isn't a Pupdate backup.");return}
     const pets=d&&(d.app==="pupdate"||d.app==="pawlette")&&Array.isArray(d.pets)?d.pets:null;
     if(!pets){toast("That file isn't a Pupdate backup.");return}
     if((d.version||1)>DATA_VERSION){toast("This backup is from a newer Pupdate ("+(d.appVersion||"?")+"). Update the app first.");return}
     let n=0;pets.forEach(p=>{if(!p||!p.id||!p.name)return;const i=S.pets.findIndex(x=>x.id===p.id);if(i<0)S.pets.push(p);else S.pets[i]=p;n++});
+    await restoreClips(d.clips);
     saveAll();if(!prefs.cur&&S.pets[0]){prefs.cur=S.pets[0].id;savePrefs()}
     toast("Restored "+n+(n===1?" pet":" pets"));render()};
   r.onerror=()=>toast("That file couldn't be read.");
@@ -369,7 +375,7 @@ function welcome(){
 
 function hero(p){
   const bits=[ageText(p.birthday),p.breed,p.sex].filter(Boolean).map(esc).join(" · ");
-  return `<div class="hero"><div class="photo">${p.photo?`<img src="${p.photo}" alt="${esc(p.name)}">`:`<span>${esc((p.name||"?")[0])}</span>`}</div>
+  return `<div class="hero"><div class="photo">${p.clip?`<img class="clipimg" data-clip="${p.id}" data-v="${p.clip.v}" src="${(Clips.cache[p.id]&&Clips.cache[p.id].ver===p.clip.v)?Clips.cache[p.id].urls[0]:p.photo||""}" alt="${esc(p.name)}">`:p.photo?`<img src="${p.photo}" alt="${esc(p.name)}">`:`<span>${esc((p.name||"?")[0])}</span>`}</div>
    <div style="min-width:0"><span class="tag">${esc(p.species||"Dog")}</span><h2>${esc(p.name)}</h2><p>${bits||"Add a birthday and breed in Profile"}</p></div></div>`;
 }
 
@@ -456,7 +462,7 @@ function openForm(o){
     let inp;
     if(fd.type==="select")inp=`<select id="${id}" name="${fd.k}">${fd.options.map(op=>{const v=typeof op==="object"?op.v:op,l=typeof op==="object"?op.l:op;return `<option value="${esc(v)}"${v===val?" selected":""}>${esc(l)}</option>`}).join("")}</select>`;
     else if(fd.type==="textarea")inp=`<textarea id="${id}" name="${fd.k}" placeholder="${esc(fd.ph||"")}">${esc(val)}</textarea>`;
-    else if(fd.type==="photo")return `<div class="photo-pick"><span id="ph_prev">${val?`<img class="av" src="${val}" alt="">`:`<span class="av">+</span>`}</span><input type="hidden" id="${id}" name="${fd.k}" value="${esc(val)}"><label class="btn ghost small" for="ph_file" style="cursor:pointer">Choose photo</label><input id="ph_file" type="file" accept="image/*" hidden></div>`;
+    else if(fd.type==="photo")return `<div class="photo-pick"><span id="ph_prev">${val?`<img class="av" src="${val}" alt="">`:`<span class="av">+</span>`}</span><input type="hidden" id="${id}" name="${fd.k}" value="${esc(val)}"><label class="btn ghost small" for="ph_file" style="cursor:pointer">Choose photo</label><input id="ph_file" type="file" accept="image/*" hidden></div>${fd.clip?clipPickHTML():""}`;
     else inp=`<input id="${id}" name="${fd.k}" type="${fd.type||"text"}" value="${esc(val)}" placeholder="${esc(fd.ph||"")}"${fd.type==="number"?' step="any" inputmode="decimal"':""}${fd.req?" required":""}${fd.list?` list="${fd.list}" autocomplete="off"`:""}>`;
     return `<div class="field${fd.half?" half":""}"><label for="${id}">${esc(fd.label)}</label>${inp}</div>`;
   });
@@ -466,6 +472,7 @@ function openForm(o){
   $("#sheet").hidden=false;
   const first=$("#panel").querySelector("input:not([type=hidden]),select,textarea");if(first&&!o.values.id)setTimeout(()=>first.focus({preventScroll:true}),50);
   const fi=$("#ph_file");if(fi)fi.addEventListener("change",onPhoto);
+  if($("#clipPick"))renderClipPick();
   $("#frm").addEventListener("submit",e=>{e.preventDefault();const vals={};new FormData(e.target).forEach((v,k)=>vals[k]=typeof v==="string"?v.trim():v);
     const miss=o.fields.find(fd=>fd.req&&!vals[fd.k]);if(miss){toast(miss.label+" is required.");const el=$("#f_"+miss.k);el&&el.focus();return}
     o.fields.forEach(fd=>{if(fd.type==="number"&&vals[fd.k]!=="")vals[fd.k]=Number(vals[fd.k])});
@@ -482,7 +489,7 @@ function onPhoto(e){
 }
 
 const PET_FIELDS=[
- {k:"photo",type:"photo",label:"Photo"},
+ {k:"photo",type:"photo",label:"Photo",clip:true},
  {k:"name",label:"Name",req:true,ph:"Biscuit"},
  {k:"species",label:"Species",type:"select",options:["Dog","Cat","Rabbit","Bird","Other"],half:true},
  {k:"sex",label:"Sex",type:"select",options:["Female","Male","Female (spayed)","Male (neutered)"],half:true},
@@ -498,9 +505,10 @@ const PET_FIELDS=[
  {k:"notes",label:"Notes",type:"textarea"}
 ];
 function petForm(p){
-  openForm({title:p?"Edit "+p.name:"New pet",fields:PET_FIELDS,values:p||{},
-    onSave(v){if(p){const c=clone(p);Object.assign(c,v);persistPet(c);toast("Saved")}else{const n=Object.assign({id:uid(),createdAt:Date.now(),weights:[],vaccines:[],meds:[],visits:[],appts:[]},v);prefs.cur=n.id;prefs.tab="home";savePrefs();persistPet(n);toast("Welcome, "+n.name)}},
-    onDelete:p?()=>{removePet(p.id);toast(p.name+" was removed")}:null,delLabel:p?"Delete "+p.name+" and all their records?":""});
+  const o={title:p?"Edit "+p.name:"New pet",fields:PET_FIELDS,values:p||{},
+    async onSave(v){if(p){const c=clone(S.pets.find(x=>x.id===p.id)||p);Object.assign(c,v);await saveClipFor(c,o);persistPet(c);toast("Saved")}else{const n=Object.assign({id:uid(),createdAt:Date.now(),weights:[],vaccines:[],meds:[],visits:[],appts:[]},v);await saveClipFor(n,o);prefs.cur=n.id;prefs.tab="home";savePrefs();persistPet(n);toast("Welcome, "+n.name)}},
+    onDelete:p?()=>{removePet(p.id);toast(p.name+" was removed")}:null,delLabel:p?"Delete "+p.name+" and all their records?":""};
+  openForm(o);
 }
 function listForm(listKey,item,title,fields,extra={}){
   openForm(Object.assign({title,fields,values:item||{},
@@ -531,8 +539,9 @@ function samplePet(){
 }
 
 /* ---------- version ---------- */
-const APP_VERSION="1.2.1",DATA_VERSION=1;
+const APP_VERSION="1.3.0",DATA_VERSION=1;
 const VERSIONS=[
+ {v:"1.3.0",date:"2026-11-10",items:["Looping video: pick a short clip of your pup and it plays on Home and Profile","Reminders for shots that are already due now alert you the next morning"]},
  {v:"1.2.1",date:"2026-11-10",items:["New name: Pawlette is now Pupdate","Your pets, records and backups carry over unchanged"]},
  {v:"1.2.0",date:"2026-11-10",items:["Calendar: tap a day to book, track costs, and add reminders to your phone's calendar","Canadian puppy and young-dog vaccine schedule: check off each shot, and next-due dates fill in for you","Ask-the-vet list, US border checklist, Canadian Kennel Club breed list and this Settings page"]},
  {v:"1.1.1",date:"2026-11-10",items:["Fixed one slanted word on the welcome screen"]},
@@ -681,6 +690,84 @@ function showWhatsNew(){
   $("#sheet").hidden=false;
 }
 
+/* ---------- looping video clips (stored on this phone in IndexedDB) ---------- */
+const CLIP_FPS=12,CLIP_SECS=3,CLIP_SIZE=256;
+const reduceMotion=()=>window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+let _db=null;
+function idb(){if(_db)return _db;_db=new Promise((res,rej)=>{try{const r=indexedDB.open("pupdate-media",1);r.onupgradeneeded=()=>r.result.createObjectStore("clips");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});return _db}
+async function idbDo(mode,fn){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction("clips",mode);const st=tx.objectStore("clips");const rq=fn(st);tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error)})}
+const clipGet=id=>idbDo("readonly",st=>st.get(id));
+const clipPut=(id,val)=>idbDo("readwrite",st=>st.put(val,id));
+const clipDel=id=>idbDo("readwrite",st=>st.delete(id));
+const Clips={cache:{},loading:{},
+  async load(id,ver){const k=id+":"+ver;if(this.cache[id]&&this.cache[id].ver===ver)return;if(this.loading[k])return;this.loading[k]=1;
+    try{const rec=await clipGet(id);if(!rec)return;const old=this.cache[id];const urls=rec.frames.map(b=>URL.createObjectURL(b));urls.forEach(u=>{const im=new Image();im.src=u});
+      this.cache[id]={ver,urls,fps:rec.fps||CLIP_FPS};if(old)setTimeout(()=>old.urls.forEach(u=>URL.revokeObjectURL(u)),2000)}catch(e){}finally{delete this.loading[k]}},
+  drop(id){const c=this.cache[id];if(c){c.urls.forEach(u=>URL.revokeObjectURL(u));delete this.cache[id]}}};
+setInterval(()=>{
+  if(document.hidden)return;
+  document.querySelectorAll("img.clipimg").forEach(img=>{const id=img.dataset.clip,ver=+img.dataset.v;const c=Clips.cache[id];
+    if(!c||c.ver!==ver){Clips.load(id,ver);return}
+    const i=reduceMotion()?0:Math.floor(performance.now()/(1000/c.fps))%c.urls.length;const u=c.urls[i];if(img.getAttribute("src")!==u)img.setAttribute("src",u)});
+  const pv=document.getElementById("clip_prev");if(pv&&pv._urls&&pv._urls.length){const i=reduceMotion()?0:Math.floor(performance.now()/(1000/CLIP_FPS))%pv._urls.length;pv.src=pv._urls[i]}
+},1000/CLIP_FPS);
+
+function seekTo(v,t){return new Promise(res=>{let done=false;const fin=()=>{if(done)return;done=true;v.removeEventListener("seeked",fin);res()};v.addEventListener("seeked",fin);setTimeout(fin,2500);v.currentTime=t})}
+function loadVideo(file){return new Promise((res,rej)=>{const v=document.createElement("video");v.muted=true;v.playsInline=true;v.setAttribute("playsinline","");v.preload="auto";
+  let ok=false;const t=setTimeout(()=>{if(!ok)rej(new Error("timeout"))},20000);
+  v.onloadeddata=()=>{ok=true;clearTimeout(t);res(v)};v.onerror=()=>{clearTimeout(t);rej(new Error("decode"))};
+  v.src=URL.createObjectURL(file);v.load();const pp=v.play&&v.play();if(pp&&pp.then)pp.then(()=>v.pause()).catch(()=>{})})}
+async function extractFrames(v,start,onProgress){
+  const c=document.createElement("canvas");c.width=c.height=CLIP_SIZE;const ctx=c.getContext("2d");
+  const vw=v.videoWidth,vh=v.videoHeight,side=Math.min(vw,vh),sx=(vw-side)/2,sy=(vh-side)/2;
+  const dur=isFinite(v.duration)?v.duration:CLIP_SECS;const len=Math.min(CLIP_SECS,Math.max(.5,dur-start));const n=Math.max(2,Math.round(CLIP_FPS*len));const frames=[];
+  for(let i=0;i<n;i++){await seekTo(v,Math.min(start+i/CLIP_FPS,Math.max(0,dur-.05)));ctx.drawImage(v,sx,sy,side,side,0,0,CLIP_SIZE,CLIP_SIZE);
+    frames.push(await new Promise(r=>c.toBlob(r,"image/jpeg",.72)));onProgress&&onProgress((i+1)/n)}
+  return frames;
+}
+const blobToDataURL=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+const dataURLToBlob=u=>{const [h,d]=u.split(",");const bin=atob(d);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:(h.match(/data:([^;]+)/)||[])[1]||"image/jpeg"})};
+
+function clipPickHTML(){return `<div class="clip-pick" id="clipPick"></div>`}
+function renderClipPick(){
+  const box=$("#clipPick");if(!box||!formCtx)return;const o=formCtx;const st=o.clipUI||{};
+  const has=o.clipNew?true:o.clipNew===null?false:!!(o.values&&o.values.clip);
+  box.innerHTML=`<div class="clip-row"><img id="clip_prev" alt="" ${has?"":"hidden"}><div style="flex:1;min-width:0"><div class="t" style="font-weight:700">Looping video</div><div class="s" style="color:var(--muted);font-size:13px">${st.busy?"Making your loop… "+Math.round((st.progress||0)*100)+"%":st.err?esc(st.err):has?"Plays silently on a loop on Home and Profile.":"Pick a short video of your pup. The app keeps 3 seconds."}</div></div></div>
+   ${st.dur>CLIP_SECS+.2?`<div class="field"><label for="clip_start">Which part? Starts at ${(st.start||0).toFixed(1)}s of ${st.dur.toFixed(1)}s</label><input type="range" id="clip_start" min="0" max="${(st.dur-CLIP_SECS).toFixed(2)}" step="0.1" value="${st.start||0}"${st.busy?" disabled":""}></div>`:""}
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn ghost small" for="clip_file" style="cursor:pointer">${has?"Choose a different video":"Choose video"}</label>${has?'<button type="button" class="btn danger small" data-act="clip-remove">Remove video</button>':""}</div>
+   <input id="clip_file" type="file" accept="video/*" hidden>`;
+  const pv=$("#clip_prev");
+  if(o.clipNew&&o.clipNew.frames){if(!o.clipNew.urls)o.clipNew.urls=o.clipNew.frames.map(b=>URL.createObjectURL(b));pv._urls=o.clipNew.urls}
+  else if(has&&o.values.id){const c=Clips.cache[o.values.id];if(c)pv._urls=c.urls;else Clips.load(o.values.id,o.values.clip.v).then(()=>{if(formCtx===o)renderClipPick()})}
+  $("#clip_file").addEventListener("change",onClipFile);
+  const r=$("#clip_start");if(r){r.addEventListener("input",()=>{st.start=+r.value;const l=r.previousElementSibling;if(l)l.textContent="Which part? Starts at "+st.start.toFixed(1)+"s of "+st.dur.toFixed(1)+"s"});r.addEventListener("change",()=>makeClip(o))}
+}
+async function onClipFile(e){
+  const o=formCtx;const file=e.target.files&&e.target.files[0];if(!file||!o)return;
+  o.clipUI={busy:true,progress:0};renderClipPick();
+  try{const v=await loadVideo(file);o.clipVideo=v;o.clipUI={dur:isFinite(v.duration)?v.duration:CLIP_SECS,start:0};await makeClip(o)}
+  catch(err){o.clipUI={err:"That video couldn't be opened. Try a different or shorter clip."};if(formCtx===o)renderClipPick()}
+}
+async function makeClip(o){
+  if(!o.clipVideo)return;const st=o.clipUI;st.busy=true;st.progress=0;st.err="";if(formCtx===o)renderClipPick();
+  try{const frames=await extractFrames(o.clipVideo,st.start||0,p=>{st.progress=p;const s=$("#clipPick .s");if(s&&formCtx===o)s.textContent="Making your loop… "+Math.round(p*100)+"%"});
+    if(o.clipNew&&o.clipNew.urls)o.clipNew.urls.forEach(u=>URL.revokeObjectURL(u));o.clipNew={frames,fps:CLIP_FPS};st.busy=false}
+  catch(err){st.busy=false;st.err="Couldn't make a loop from that video. Try another one."}
+  if(formCtx===o)renderClipPick();
+}
+async function saveClipFor(pet,o){
+  if(o.clipNew===undefined)return pet;
+  try{
+    if(o.clipNew===null){await clipDel(pet.id);Clips.drop(pet.id);delete pet.clip}
+    else{await clipPut(pet.id,{frames:o.clipNew.frames,fps:o.clipNew.fps});Clips.drop(pet.id);pet.clip={v:Date.now(),n:o.clipNew.frames.length};
+      if(!pet.photo)pet.photo=await blobToDataURL(o.clipNew.frames[0])}
+  }catch(e){toast("This browser couldn't save the video. Your other changes were saved.")}
+  return pet;
+}
+async function clipsForBackup(){const out={};for(const p of S.pets){if(!p.clip)continue;try{const r=await clipGet(p.id);if(r)out[p.id]={fps:r.fps,frames:await Promise.all(r.frames.map(blobToDataURL))}}catch(e){}}return out}
+async function restoreClips(clips){if(!clips)return;for(const id in clips){try{const c=clips[id];await clipPut(id,{fps:c.fps||CLIP_FPS,frames:c.frames.map(dataURLToBlob)});Clips.drop(id)}catch(e){}}}
+function remindWhen(date){return daysUntil(date)>=1?date:addDays(todayISO(),1)}
+
 /* ---------- calendar, costs & reminders ---------- */
 const REMIND={"1 day before":1440,"2 days before":2880,"1 week before":10080,"1 hour before":60,"No reminder":0};
 const APPT_TYPES=["Vet","Grooming","Training","Daycare","Boarding","Other"];
@@ -816,13 +903,13 @@ document.addEventListener("click",e=>{
   switch(a){
     case "settings":closeSheet();if(prefs.tab!=="settings")prefs.lastTab=prefs.tab;prefs.tab="settings";savePrefs();render();window.scrollTo(0,0);break;
     case "go-health":prefs.tab="health";savePrefs();render();window.scrollTo(0,0);break;
-    case "vax-remind":{const v=findIn("vaccines",id);if(v)remindSheet({id:"vx-"+v.id,type:"Vaccine",title:v.name+" due",when:v.due+"T09:00",where:p.vetName||"",remind:"1 week before"},p,false);break}
+    case "vax-remind":{const v=findIn("vaccines",id);if(v)remindSheet({id:"vx-"+v.id,type:"Vaccine",title:(daysUntil(v.due)>=1?"":"Book: ")+v.name+(daysUntil(v.due)>=1?" due":" (due now)"),when:remindWhen(v.due)+"T09:00",where:p.vetName||"",remind:"1 week before"},p,false);break}
     case "plan-check":{const it=planItems(p).find(x=>x.pid===b.dataset.pid);if(!it)break;
       if(it.done){update(c=>{c.vaccines=c.vaccines.filter(v=>v.id!==it.rec.id)});toast("Unchecked "+it.label)}
       else{const est=it.st==="missed";const date=est?it.target:todayISO();const v={id:uid(),name:VAX_NAMES[it.key],date,vet:"",plan:it.pid,notes:est?"Date estimated from the usual schedule. Edit if you know the exact date.":""};v.due=suggestDue(p,v);
         update(c=>{c.vaccines=c.vaccines||[];c.vaccines.push(v)});toast("✓ "+it.label+(est?" · dated "+fmtShort(date)+" (estimated)":" · given today")+(v.due?" · next due "+fmtD(v.due):""))}
       break}
-    case "plan-remind":{const it=planItems(p).find(x=>x.pid===b.dataset.pid);if(it)remindSheet({id:"plan-"+p.id+"-"+it.i,type:"Vaccine",title:it.label+" due",when:it.target+"T09:00",where:p.vetName||"",remind:"1 week before"},p,false);break}
+    case "plan-remind":{const it=planItems(p).find(x=>x.pid===b.dataset.pid);if(it)remindSheet({id:"plan-"+p.id+"-"+it.i,type:"Vaccine",title:(it.d>=1?"":"Book: ")+it.label+(it.d>=1?" due":" (due now)"),when:remindWhen(it.target)+"T09:00",where:p.vetName||"",remind:"1 week before"},p,false);break}
     case "q-done":{const q=findIn("questions",id);if(q)qForm(q,true);break}
     case "q-edit":{const q=findIn("questions",id);if(q)qForm(q,false);break}
     case "cdc-done":openForm({title:"CDC Dog Import Form",fields:[{k:"cdcForm",label:"Date you submitted it",type:"date",def:todayISO(),req:true}],values:{cdcForm:p.cdcForm},onSave(v){update(c=>{c.cdcForm=v.cdcForm});toast("Saved · good until "+fmtD(addMonths(v.cdcForm,6)))}});break;
@@ -854,6 +941,7 @@ document.addEventListener("click",e=>{
     case "cal-go":{calState();S.calDay=b.dataset.d;const d=parseD(S.calDay);S.calY=d.getFullYear();S.calM=d.getMonth();prefs.tab="cal";savePrefs();render();window.scrollTo(0,0);break}
     case "copy":{const v=b.dataset.v;try{navigator.clipboard.writeText(v).then(()=>toast("Copied"),()=>toast(v))}catch(err){toast(v)}break}
     case "close":closeSheet();break;
+    case "clip-remove":if(formCtx){if(formCtx.clipNew&&formCtx.clipNew.urls)formCtx.clipNew.urls.forEach(u=>URL.revokeObjectURL(u));formCtx.clipNew=null;formCtx.clipVideo=null;formCtx.clipUI={};renderClipPick()}break;
     case "backup":exportBackup();break;
     case "restore":$("#restoreFile").value="";$("#restoreFile").click();break;
     case "hide-install":prefs.hideInstall=true;savePrefs();render();break;

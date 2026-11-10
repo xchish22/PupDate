@@ -2,6 +2,17 @@
 
 All notable changes to Pupdate. Numbers follow MAJOR.MINOR.PATCH (see VERSIONING.md).
 
+## 1.3.0 — 2026-11-10
+### Added
+- **Looping video** of your pet. In Add/Edit pet, choose a video from your Photos, and a slider picks which 3 seconds to use. It plays silently on a loop in the round picture on Home and Profile.
+  - Stored compactly on the phone (about 200 KB per pet) and included in backups.
+  - Stays still when iPhone "Reduce Motion" is on.
+  - The first frame becomes the small picture if there's no photo. "Remove video" goes back to the still photo.
+  - Deleting a pet also deletes its video.
+
+### Fixed
+- Reminders for shots that are already due now were set for a date that had already passed, so they never alerted. They're now set for tomorrow at 9 am as "Book: …".
+
 ## 1.2.1 — 2026-11-10
 ### Changed
 - The app is renamed **Pupdate** (previously Pawlette): title, header, Home Screen name and backup file names.
