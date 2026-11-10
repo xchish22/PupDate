@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pupdate</title>
+<meta name="description" content="Track your pet's growth, vaccines, medications, vet records and appointments.">
+<meta name="theme-color" content="#F5F8F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141A1E" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pupdate">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one-column phone app — sticky pet switcher on top, scrolling view, fixed tab bar at the bottom. */
+/* Palette: soft pastels (mint, sky, peach, lavender) on a cool off-white, slate text, sea-green accent. */
+:root{
+  --bg:#F5F8F6; --surface:#FFFFFF; --surface2:#EAF2EF; --ink:#26343B; --muted:#62737B;
+  --accent:#337A70; --accent-ink:#FFFFFF; --gold:#F0B693; --line:#DFE7E4;
+  --mint:#DDF2E9; --sky:#DDEBF8; --peach:#FDE6D7; --lav:#E9E4F6;
+  --p1:#337A70; --p2:#D9844F; --p3:#5B86CC; --p4:#8F72CC;
+  --good:#2B7A57; --warn:#AD6418; --bad:#BC3F3B;
+  --shadow:0 8px 24px -14px rgba(38,52,59,.28);
+  --display:"Nunito","Avenir Next",-apple-system,system-ui,sans-serif;
+  --body:"Nunito","Avenir Next",-apple-system,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141A1E; --surface:#1B2429; --surface2:#233138; --ink:#E8F0EE; --muted:#9DAEB3;
+  --accent:#8ED3C4; --accent-ink:#10302B; --gold:#E9B48F; --line:#2D3B41;
+  --mint:#1E3832; --sky:#1D3145; --peach:#3B2C24; --lav:#2C2A40;
+  --p1:#8ED3C4; --p2:#F0AE85; --p3:#8FB2EC; --p4:#B9A2EE;
+  --good:#7FD3A8; --warn:#F2B36B; --bad:#FF8F85; --shadow:0 8px 24px -14px rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141A1E; --surface:#1B2429; --surface2:#233138; --ink:#E8F0EE; --muted:#9DAEB3;
+  --accent:#8ED3C4; --accent-ink:#10302B; --gold:#E9B48F; --line:#2D3B41;
+  --mint:#1E3832; --sky:#1D3145; --peach:#3B2C24; --lav:#2C2A40;
+  --p1:#8ED3C4; --p2:#F0AE85; --p3:#8FB2EC; --p4:#B9A2EE;
+  --good:#7FD3A8; --warn:#F2B36B; --bad:#FF8F85; --shadow:0 8px 24px -14px rgba(0,0,0,.7); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:500 16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{padding-block:12px 10px;display:flex;flex-direction:column;gap:10px}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brand h1{margin:0;font:800 26px/1 var(--display);letter-spacing:-.01em}
+.brand h1 span{color:var(--accent)}
+.savedto{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-4px;padding:2px 4px}
+.chips::-webkit-scrollbar{display:none}
+.chip{display:flex;align-items:center;gap:8px;flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 14px 4px 4px;font-weight:500}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.add{padding:4px 14px;color:var(--accent);border-style:dashed}
+.av{width:30px;height:30px;border-radius:50%;object-fit:cover;background:var(--surface2);display:grid;place-items:center;font:800 15px var(--display);color:var(--accent);flex:none;overflow:hidden}
+.chip.on .av{color:var(--accent)}
+
+main{padding-block:18px 110px}
+.view{display:flex;flex-direction:column;gap:18px}
+
+/* hero */
+.hero{display:flex;gap:16px;align-items:center}
+.hero .photo{width:96px;height:96px;border-radius:50%;flex:none;overflow:hidden;background:var(--surface2);display:grid;place-items:center;box-shadow:0 0 0 3px var(--bg),0 0 0 4px var(--gold)}
+.hero .photo img{width:100%;height:100%;object-fit:cover}
+.hero .photo span{font:800 40px var(--display);color:var(--accent)}
+.hero h2{margin:0;font:800 clamp(34px,10vw,46px)/1 var(--display);letter-spacing:-.02em;text-wrap:balance}
+.hero p{margin:6px 0 0;color:var(--muted)}
+.tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+
+/* sections */
+.sec{display:flex;flex-direction:column;gap:10px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sechead h3{margin:0;font:800 22px/1.1 var(--display)}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--surface);border:1px solid transparent;border-radius:16px;padding:12px;min-width:0}
+.stat b{display:block;font:800 22px/1.15 var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.list{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0;padding-top:2px}
+.row:last-child{padding-bottom:2px}
+.row .main{flex:1;min-width:0}
+.row .t{font-weight:500;overflow-wrap:anywhere}
+.row .s{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.date{flex:none;width:46px;text-align:center;border-radius:12px;background:var(--surface2);padding:6px 0;line-height:1}
+.date b{display:block;font:800 20px var(--display)}
+.date small{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pill{flex:none;font-size:11px;font-weight:600;letter-spacing:.04em;padding:4px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.good{color:var(--good)}.pill.warn{color:var(--warn)}.pill.bad{color:var(--bad)}.pill.mute{color:var(--muted)}
+.btn{border:0;border-radius:999px;padding:11px 18px;font-weight:600;background:var(--accent);color:var(--accent-ink);letter-spacing:.02em}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.btn.small{padding:6px 12px;font-size:13px}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid var(--line)}
+.link{background:none;border:0;color:var(--accent);font-weight:600;padding:4px 0;font-size:14px}
+.icon-btn{background:none;border:0;color:var(--muted);padding:6px;border-radius:10px;flex:none}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+.note{font-size:13px;color:var(--muted);background:var(--surface2);border-radius:12px;padding:10px 12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--surface)}
+.seg button{border:0;background:none;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.kv{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);gap:10px 14px;margin:0}
+.kv dt{color:var(--muted);font-size:13px}
+.kv dd{margin:0;overflow-wrap:anywhere}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font:600 11px var(--body)}
+.stat:nth-child(1){background:var(--mint)}.stat:nth-child(2){background:var(--sky)}.stat:nth-child(3){background:var(--peach)}
+.stat .eyebrow{color:var(--ink);opacity:.7}
+.date{background:var(--sky)!important}
+.chip.add{background:var(--mint)}
+.welcome .note,.note{background:var(--lav)}
+.attn .row .dot{width:8px;height:8px;border-radius:50%;flex:none}
+
+/* welcome */
+.welcome{text-align:left;padding-block:24px;display:flex;flex-direction:column;gap:16px}
+.welcome h2{margin:0;font:800 clamp(34px,10vw,48px)/1.05 var(--display);letter-spacing:-.02em}
+.welcome h2 em{color:var(--accent);font-style:normal}
+.welcome p{margin:0;color:var(--muted);max-width:40ch}
+.welcome ul{margin:0;padding-left:18px;color:var(--ink)}
+.welcome .acts{display:flex;gap:10px;flex-wrap:wrap}
+
+/* tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs .wrap{display:grid;grid-template-columns:repeat(5,1fr);padding-block:6px}
+.tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:.03em}
+.tabs button svg{width:22px;height:22px}
+.tabs button.on{color:var(--accent)}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(20,30,36,.4)}
+.panel{background:var(--bg);width:100%;max-width:560px;max-height:92%;overflow-y:auto;border-radius:24px 24px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+.panel h3{margin:0;font:800 28px/1.1 var(--display)}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.field input,.field select,.field textarea{width:100%;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 12px;font-size:16px}
+.field textarea{min-height:76px;resize:vertical}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.panel .acts{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;padding-top:4px}
+.panel .acts .r{display:flex;gap:10px;margin-left:auto}
+.photo-pick{display:flex;align-items:center;gap:12px}
+.photo-pick .av{width:64px;height:64px;font-size:26px}
+.confirm{border:1px solid var(--bad);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;color:var(--ink)}
+
+.calcard{padding:12px}
+.calhead{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.calhead b{font:800 18px var(--display);flex:1;text-align:center}
+.calhead .icon-btn{font-size:24px;line-height:1;width:40px;height:40px;color:var(--ink)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+.cal .wd{font-size:12px;text-align:center;color:var(--muted);font-weight:700;padding:2px 0 6px}
+.cal .d{border:0;background:none;border-radius:12px;min-height:46px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0 4px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cal .d .n{width:28px;height:28px;display:grid;place-items:center;border-radius:50%}
+.cal .d.out{opacity:.38}
+.cal .d.today .n{box-shadow:inset 0 0 0 2px var(--accent);color:var(--accent)}
+.cal .d.sel{background:var(--mint)}
+.cal .d.sel .n{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.cal .dots{display:flex;gap:3px;height:6px}.cal .dots i{width:6px;height:6px;border-radius:50%}
+.time{flex:none;width:58px;font-weight:800;font-size:14px;color:var(--accent);font-variant-numeric:tabular-nums}
+.petdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.barrow{display:grid;grid-template-columns:84px minmax(0,1fr) auto;align-items:center;gap:10px;font-size:14px}
+.barrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.barrow .bar{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.barrow .bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.barrow b{font-variant-numeric:tabular-nums}
+.remind{display:flex;flex-direction:column;gap:8px}
+.remrow{display:flex;gap:12px;align-items:center;border:0;background:var(--peach);color:var(--ink);border-radius:16px;padding:12px 14px;font-size:15px;line-height:1.35}
+.remrow small{color:var(--muted);font-size:13px}
+.bellc{width:34px;height:34px;flex:none;border-radius:50%;background:var(--surface);display:grid;place-items:center;color:var(--p2)}
+.qform{display:flex;gap:8px}.qform input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;font-size:16px}
+details summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:14px;padding:4px 0}
+.ck{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;align-self:flex-start;margin-top:1px}
+.ck.ok{background:var(--mint);color:var(--good)}.ck.no{background:var(--peach);color:var(--warn)}.ck.info{background:var(--sky);color:var(--p3);font-style:italic;font-family:Georgia,serif}
+.ckacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.ckacts a{text-decoration:none}
+.note a{color:var(--accent);font-weight:700}
+.ver ul{margin:6px 0 0;padding-left:20px;font-size:14px;display:flex;flex-direction:column;gap:3px}
+.verhead{display:flex;align-items:center;gap:8px}.verhead .s{color:var(--muted);font-size:13px;margin-left:auto}
+.gear{color:var(--ink);padding:4px}
+.chk{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--surface);color:var(--accent-ink);font-weight:800;font-size:16px;display:grid;place-items:center;padding:0}
+.chk.on{background:var(--accent);border-color:var(--accent)}
+.row.given .t{color:var(--muted)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;max-width:calc(100% - 32px)}
+.loading{padding:40px 0;color:var(--muted);font:600 20px var(--display)}
+@media (prefers-reduced-motion:no-preference){.panel{animation:up .22s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><h1>Pup<span>date</span></h1><div style="display:flex;align-items:center;gap:6px"><span class="savedto" id="savedto"></span><button class="icon-btn gear" data-act="settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div></div>
+  <div class="chips" id="chips"></div>
+</div></header>
+<main><div class="wrap view" id="view"><div class="loading">Fetching your babies…</div></div></main>
+<nav class="tabs" id="tabs" hidden><div class="wrap" id="tabbtns"></div></nav>
+<div class="sheet" id="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
+<div id="toast" hidden></div>
+<datalist id="breeds"></datalist><datalist id="vaxnames"><option value="DA2PP"><option value="Rabies"><option value="Leptospirosis"><option value="Lyme"><option value="Bordetella"><option value="Canine influenza"></datalist>
+<input type="file" id="restoreFile" accept="application/json,.json" hidden>
+
+<script>
+(function(){
+"use strict";
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const DAY=864e5;
+const pad=n=>String(n).padStart(2,"0");
+const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+const parseD=s=>{if(!s)return null;const [y,m,d]=s.slice(0,10).split("-").map(Number);if(!y)return null;const t=new Date(y,m-1,d);if(s.length>10){const [hh,mm]=s.slice(11,16).split(":").map(Number);t.setHours(hh||0,mm||0)}return t};
+const startOfToday=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const daysUntil=s=>{const d=parseD(s);if(!d)return null;const x=new Date(d);x.setHours(0,0,0,0);return Math.round((x-startOfToday())/DAY)};
+const addDays=(s,n)=>{const d=parseD(s);d.setDate(d.getDate()+Number(n));return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtD=s=>{const d=parseD(s);return d?MON[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear():""};
+const fmtShort=s=>{const d=parseD(s);return d?MON[d.getMonth()]+" "+d.getDate():""};
+const fmtTime=s=>{if(!s||s.length<16)return"";const d=parseD(s);let h=d.getHours(),m=d.getMinutes();const ap=h<12?"am":"pm";h=h%12||12;return h+(m?":"+pad(m):"")+ap};
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+function ageParts(bday){
+  const b=parseD(bday);if(!b)return null;
+  const days=Math.floor((startOfToday()-b)/DAY);if(days<0)return null;
+  const weeks=Math.floor(days/7);
+  const now=new Date();let months=(now.getFullYear()-b.getFullYear())*12+(now.getMonth()-b.getMonth());if(now.getDate()<b.getDate())months--;
+  return {days,weeks,months};
+}
+function ageText(bday){
+  const a=ageParts(bday);if(!a)return"";
+  if(a.weeks<26)return a.weeks+(a.weeks===1?" week":" weeks")+" old";
+  if(a.months<24)return a.months+" months old";
+  const y=Math.floor(a.months/12),m=a.months%12;return y+" yr"+(m?" "+m+" mo":"")+" old";
+}
+function ageShort(bday){const a=ageParts(bday);if(!a)return["—",""];if(a.weeks<26)return[a.weeks,"weeks old"];if(a.months<24)return[a.months,"months old"];return[(a.months/12).toFixed(1),"years old"]}
+
+/* ---------- state ---------- */
+const PREF="pawlette.prefs",LOCAL="pawlette.pets";
+const prefs=Object.assign({unit:"lb",cur:null,tab:"home"},lsGet(PREF,{}));
+const S={pets:[],loading:true,mode:"local",note:"",confirmDel:false};
+const savePrefs=()=>lsSet(PREF,prefs);
+const cur=()=>S.pets.find(p=>p.id===prefs.cur)||S.pets[0]||null;
+
+/* ---------- storage: on this device (localStorage) ---------- */
+function initStore(){
+  S.pets=lsGet(LOCAL,[]);S.loading=false;
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  render();
+}
+function saveAll(){if(!lsSet(LOCAL,S.pets))toast("This phone is out of space for Pupdate. Try smaller photos.")}
+function persistPet(p){
+  const i=S.pets.findIndex(x=>x.id===p.id);
+  if(i<0)S.pets.push(p);else S.pets[i]=p;
+  saveAll();render();
+}
+function removePet(id){
+  S.pets=S.pets.filter(p=>p.id!==id);saveAll();
+  if(prefs.cur===id){prefs.cur=S.pets[0]?S.pets[0].id:null;savePrefs()}
+  render();
+}
+
+/* ---------- backup & restore ---------- */
+async function exportBackup(){
+  const data={app:"pupdate",version:DATA_VERSION,appVersion:APP_VERSION,exportedAt:new Date().toISOString(),pets:S.pets};
+  const name="pupdate-backup-"+todayISO()+".json";
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  let done=false;
+  try{const file=new File([blob],name,{type:"application/json"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Pupdate backup"});done=true}}
+  catch(e){if(e&&e.name==="AbortError")return}
+  if(!done){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+  prefs.lastBackup=todayISO();savePrefs();toast("Backup saved");render();
+}
+function importBackup(file){
+  const r=new FileReader();
+  r.onload=()=>{let d;try{d=JSON.parse(r.result)}catch(e){toast("That file isn't a Pupdate backup.");return}
+    const pets=d&&(d.app==="pupdate"||d.app==="pawlette")&&Array.isArray(d.pets)?d.pets:null;
+    if(!pets){toast("That file isn't a Pupdate backup.");return}
+    if((d.version||1)>DATA_VERSION){toast("This backup is from a newer Pupdate ("+(d.appVersion||"?")+"). Update the app first.");return}
+    let n=0;pets.forEach(p=>{if(!p||!p.id||!p.name)return;const i=S.pets.findIndex(x=>x.id===p.id);if(i<0)S.pets.push(p);else S.pets[i]=p;n++});
+    saveAll();if(!prefs.cur&&S.pets[0]){prefs.cur=S.pets[0].id;savePrefs()}
+    toast("Restored "+n+(n===1?" pet":" pets"));render()};
+  r.onerror=()=>toast("That file couldn't be read.");
+  r.readAsText(file);
+}
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const isInstalled=()=>window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
+function installHint(){
+  if(isInstalled()||prefs.hideInstall)return"";
+  return `<div class="note" style="display:flex;gap:10px;align-items:flex-start"><div style="flex:1;min-width:0">${isIOS?"<b>Put Pupdate on your Home Screen:</b> in Safari, tap the Share button, then <b>Add to Home Screen</b>. It opens like an app and keeps your data safer.":"<b>Install Pupdate:</b> use your browser menu and choose <b>Install app</b> or <b>Add to Home screen</b>."}</div><button class="icon-btn" data-act="hide-install" aria-label="Dismiss">✕</button></div>`;
+}
+function backupNudge(){
+  if(!S.pets.length)return"";
+  const last=prefs.lastBackup;const age=last?-daysUntil(last):null;
+  if(age!=null&&age<30)return"";
+  return `<div class="note" style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap"><span style="min-width:0">${last?"Last backup "+fmtShort(last)+".":"No backup yet."} Your pets live only on this phone.</span><button class="btn small" data-act="backup">Back up now</button></div>`;
+}
+
+function update(fn){const p=cur();if(!p)return;const c=clone(p);fn(c);persistPet(c)}
+
+/* ---------- icons ---------- */
+const I={
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>',
+ growth:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 16l5-5 4 3 6-7"/><path d="M16 7h4v4"/></svg>',
+ health:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M9 11h6M12 8v6"/></svg>',
+ cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+ profile:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="15.5" rx="4.2" ry="3.6"/><circle cx="6" cy="10" r="1.8"/><circle cx="18" cy="10" r="1.8"/><circle cx="9.3" cy="6.3" r="1.8"/><circle cx="14.7" cy="6.3" r="1.8"/></svg>',
+ bell:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+ edit:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>'
+};
+const TABS=[["home","Home"],["growth","Growth"],["health","Health"],["cal","Calendar"],["profile","Profile"]];
+
+/* ---------- derived ---------- */
+const KG=0.45359237;
+const showW=lb=>lb==null||lb===""?"—":prefs.unit==="kg"?(lb*KG).toFixed(1):(+lb).toFixed(1);
+const unitL=()=>prefs.unit;
+const sortBy=(a,k,dir=1)=>a.slice().sort((x,y)=>(x[k]||"")<(y[k]||"")?-dir:(x[k]||"")>(y[k]||"")?dir:0);
+function dueStatus(days){if(days==null)return null;if(days<0)return["bad",Math.abs(days)+"d overdue"];if(days===0)return["warn","Due today"];if(days<=14)return["warn","Due in "+days+"d"];return["good","Due "+""];}
+function medNext(m){return m.last&&m.every?addDays(m.last,m.every):null}
+
+function attention(p){
+  const out=[];
+  (p.vaccines||[]).filter(v=>!superseded(p,v)).forEach(v=>{const d=daysUntil(v.due);if(d!=null&&d<=14)out.push({d,t:v.name+" booster",s:d<0?Math.abs(d)+" days overdue":d===0?"Due today":"Due "+fmtShort(v.due),lvl:d<0?"bad":"warn",act:"vax-edit",id:v.id})});
+  (p.meds||[]).forEach(m=>{const n=medNext(m);const d=daysUntil(n);if(d!=null&&d<=3)out.push({d,t:m.name,s:d<0?Math.abs(d)+" days overdue":d===0?"Due today":"Due "+fmtShort(n),lvl:d<0?"bad":"warn",act:"med-give",id:m.id,btn:"Given"})});
+  planItems(p).filter(s=>s.core&&s.st==="due"&&!(p.vaccines||[]).some(v=>vKey(v.name)===s.key&&v.due&&!superseded(p,v))).forEach(s=>out.push({d:s.d,t:s.label,s:s.d<0?"Due now (typical timing)":"Due around "+fmtShort(s.target),lvl:"warn",act:"go-health",id:""}));
+  {const q=openQs(p).length;const nv=(p.appts||[]).filter(a=>!a.done&&a.type==="Vet"&&daysUntil(a.when)>=0&&daysUntil(a.when)<=14).sort((x,y)=>x.when<y.when?-1:1)[0];if(q&&nv)out.push({d:daysUntil(nv.when)-.5,t:q+(q===1?" question":" questions")+" for the vet",s:"Bring them to "+(nv.title||"the vet")+" on "+fmtShort(nv.when),lvl:"mute",act:"go-health",id:""})}
+  (p.appts||[]).filter(a=>!a.done).forEach(a=>{const d=daysUntil(a.when);if(d!=null&&d>=0&&d<=7)out.push({d,t:a.title||a.type,s:(d===0?"Today":d===1?"Tomorrow":fmtShort(a.when))+(fmtTime(a.when)?" · "+fmtTime(a.when):""),lvl:"mute",act:"appt-edit",id:a.id})});
+  return out.sort((a,b)=>a.d-b.d);
+}
+
+/* ---------- rendering ---------- */
+function render(){
+  const v=$("#view");
+  $("#savedto").textContent=S.loading?"":"Saved on this phone";
+  if(S.loading){v.innerHTML='<div class="loading">Fetching your babies…</div>';$("#tabs").hidden=true;$("#chips").innerHTML="";return}
+  if(prefs.tab==="appts")prefs.tab="cal";
+  const p=cur();
+  if(p&&prefs.cur!==p.id){prefs.cur=p.id;savePrefs()}
+  $("#chips").innerHTML=S.pets.map(x=>`<button class="chip${p&&x.id===p.id?" on":""}" data-act="pick" data-id="${x.id}">${avatar(x)}${esc(x.name)}</button>`).join("")+(S.pets.length?`<button class="chip add" data-act="pet-new">+ Add pet</button>`:"");
+  $("#tabs").hidden=!p;
+  $("#tabbtns").innerHTML=TABS.map(([k,l])=>`<button class="${prefs.tab===k?"on":""}" data-act="tab" data-tab="${k}" aria-label="${l}">${I[k]}<span>${l}</span></button>`).join("");
+  const note=S.note?`<div class="note">${esc(S.note)}</div>`:"";
+  if(prefs.tab==="settings"){v.innerHTML=note+viewSettings();$("#tabs").hidden=!p;return}
+  if(!p){v.innerHTML=note+welcome();return}
+  const views={home:viewHome,growth:viewGrowth,health:viewHealth,cal:viewCal,profile:viewProfile};
+  v.innerHTML=note+(views[prefs.tab]||viewHome)(p);
+}
+const avatar=(p)=>p.photo?`<img class="av" src="${p.photo}" alt="">`:`<span class="av">${esc((p.name||"?")[0].toUpperCase())}</span>`;
+
+function welcome(){
+  return `<section class="welcome">
+    <span class="tag">For the ones who steal the bed</span>
+    <h2>Every <em>milestone</em>, every shot, every pound.</h2>
+    <p>Keep your pet's growth, vaccines, medications, vet records and appointments in one place.</p>
+    <ul><li>Growth chart with weight in lb or kg</li><li>Vaccine & medication due dates, with a puppy shot schedule</li><li>Vet visits, microchip number and vet contact</li><li>Calendar for vet, grooming and training, with costs and reminders</li><li>Canadian vaccine schedule and US border checklist</li></ul>
+    <div class="acts"><button class="btn" data-act="pet-new">Add your first pet</button><button class="btn ghost" data-act="sample">Try an example pup</button></div>
+    ${installHint()}
+    <div class="acts"><button class="link" data-act="restore">Restore from a backup file</button></div>
+  </section>`;
+}
+
+function hero(p){
+  const bits=[ageText(p.birthday),p.breed,p.sex].filter(Boolean).map(esc).join(" · ");
+  return `<div class="hero"><div class="photo">${p.photo?`<img src="${p.photo}" alt="${esc(p.name)}">`:`<span>${esc((p.name||"?")[0])}</span>`}</div>
+   <div style="min-width:0"><span class="tag">${esc(p.species||"Dog")}</span><h2>${esc(p.name)}</h2><p>${bits||"Add a birthday and breed in Profile"}</p></div></div>`;
+}
+
+function latestW(p){const w=sortBy((p.weights||[]).filter(x=>x.lb!==""&&x.lb!=null),"date");return [w[w.length-1],w[w.length-2],w]}
+
+function viewHome(p){
+  const [last,prev,all]=latestW(p);
+  const delta=last&&prev?(last.lb-prev.lb):null;
+  const up=sortBy((p.appts||[]).filter(a=>!a.done&&daysUntil(a.when)>=0),"when")[0];
+  const [an,al]=ageShort(p.birthday);
+  const att=attention(p);
+  return reminderBanner()+backupNudge()+hero(p)+`
+  <div class="stats">
+    <div class="stat"><span class="eyebrow">Weight</span><b>${last?showW(last.lb):"—"}<span style="font-size:13px"> ${unitL()}</span></b><small>${delta!=null?(delta>=0?"+":"−")+showW(Math.abs(delta))+" since "+fmtShort(prev.date):last?fmtShort(last.date):"Not logged"}</small></div>
+    <div class="stat"><span class="eyebrow">Age</span><b>${an}</b><small>${al||"Add birthday"}</small></div>
+    <div class="stat"><span class="eyebrow">Next appt</span><b>${up?fmtShort(up.when):"—"}</b><small>${up?esc(up.title||up.type):"None booked"}</small></div>
+  </div>
+  <section class="sec attn"><div class="sechead"><h3>Needs attention</h3><span class="eyebrow">Next 2 weeks</span></div>
+   <div class="card list">${att.length?att.map(a=>`<div class="row"><span class="dot" style="background:var(--${a.lvl==="mute"?"gold":a.lvl})"></span><div class="main"><div class="t">${esc(a.t)}</div><div class="s">${esc(a.s)}</div></div>${a.btn?`<button class="btn small" data-act="${a.act}" data-id="${a.id}">${a.btn}</button>`:`<button class="icon-btn" data-act="${a.act}" data-id="${a.id}" aria-label="Open">${I.edit}</button>`}</div>`).join(""):`<div class="empty">All caught up. Nothing due in the next two weeks.</div>`}</div></section>
+  <section class="sec"><div class="sechead"><h3>Growth</h3><button class="link" data-act="w-new">+ Log weight</button></div>
+   <div class="card">${all.length>1?chart(all,true):`<div class="empty">${all.length?"Log one more weight to see the curve.":"Log a weight to start the growth chart."}</div>`}</div></section>
+  <section class="sec"><div class="sechead"><h3>Quick add</h3></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" data-act="vax-new">+ Vaccine</button><button class="btn ghost small" data-act="med-new">+ Medication</button><button class="btn ghost small" data-act="visit-new">+ Vet visit</button><button class="btn ghost small" data-act="appt-new">+ Appointment</button></div></section>`;
+}
+
+function chart(ws,compact){
+  const pts=ws.map(w=>({t:parseD(w.date).getTime(),v:prefs.unit==="kg"?w.lb*KG:+w.lb}));
+  const W=340,H=compact?150:200,L=34,R=12,T=14,B=24;
+  const t0=pts[0].t,t1=pts[pts.length-1].t||t0+1;const span=Math.max(t1-t0,DAY);
+  let vmin=Math.min(...pts.map(p=>p.v)),vmax=Math.max(...pts.map(p=>p.v));
+  const step=niceStep((vmax-vmin)||vmax||1);vmin=Math.max(0,Math.floor(vmin/step)*step);vmax=Math.ceil(vmax/step)*step;if(vmax===vmin)vmax=vmin+step;
+  const x=t=>L+(t-t0)/span*(W-L-R),y=v=>T+(1-(v-vmin)/(vmax-vmin))*(H-T-B);
+  let grid="";for(let g=vmin;g<=vmax+1e-9;g+=step){grid+=`<line x1="${L}" x2="${W-R}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(g)+4}" text-anchor="end">${+g.toFixed(1)}</text>`}
+  const line=pts.map((p,i)=>(i?"L":"M")+x(p.t).toFixed(1)+" "+y(p.v).toFixed(1)).join(" ");
+  const area=line+` L${x(pts[pts.length-1].t).toFixed(1)} ${H-B} L${x(t0).toFixed(1)} ${H-B} Z`;
+  const lp=pts[pts.length-1];
+  const lab=`<text x="${L}" y="${H-6}">${fmtShort(ws[0].date)}</text><text x="${W-R}" y="${H-6}" text-anchor="end">${fmtShort(ws[ws.length-1].date)}</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Weight over time"><defs><linearGradient id="gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".28"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#gf)"/><path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>${pts.map(p=>`<circle cx="${x(p.t)}" cy="${y(p.v)}" r="2.6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6"/>`).join("")}<circle cx="${x(lp.t)}" cy="${y(lp.v)}" r="5" fill="var(--accent)"/>${lab}</svg>`;
+}
+function niceStep(r){const raw=r/4;const p=Math.pow(10,Math.floor(Math.log10(raw)));const n=raw/p;return (n<=1?1:n<=2?2:n<=5?5:10)*p}
+
+function viewGrowth(p){
+  const ws=sortBy((p.weights||[]),"date");
+  const rows=ws.slice().reverse().map((w,i,arr)=>{const nx=arr[i+1];const d=nx&&w.lb!==""&&nx.lb!==""?w.lb-nx.lb:null;
+    return `<div class="row"><div class="date"><b>${parseD(w.date).getDate()}</b><small>${MON[parseD(w.date).getMonth()]}</small></div><div class="main"><div class="t">${showW(w.lb)} ${unitL()}${w.height?` · ${esc(w.height)} in tall`:""}</div><div class="s">${esc(ageText(p.birthday)&&p.birthday?ageAt(p.birthday,w.date):fmtD(w.date))}${w.note?" · "+esc(w.note):""}</div></div>${d!=null?`<span class="pill ${d>=0?"good":"warn"}">${d>=0?"+":"−"}${showW(Math.abs(d))}</span>`:""}<button class="icon-btn" data-act="w-edit" data-id="${w.id}" aria-label="Edit">${I.edit}</button></div>`}).join("");
+  return `<div class="sechead"><h3 style="font:800 30px/1.1 var(--display);margin:0">${esc(p.name)}'s growth</h3></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="seg" role="group" aria-label="Units"><button class="${prefs.unit==="lb"?"on":""}" data-act="unit" data-u="lb">lb</button><button class="${prefs.unit==="kg"?"on":""}" data-act="unit" data-u="kg">kg</button></div><button class="btn" data-act="w-new">+ Log weight</button></div>
+  <div class="card">${ws.filter(w=>w.lb!=="").length>1?chart(ws.filter(w=>w.lb!==""),false):`<div class="empty">Log at least two weights to see the growth curve. Weekly weigh-ins work well for puppies.</div>`}</div>
+  <section class="sec"><div class="sechead"><h3>Weigh-ins</h3><span class="eyebrow">${ws.length} logged</span></div><div class="card list">${rows||'<div class="empty">No weigh-ins yet.</div>'}</div></section>`;
+}
+function ageAt(b,d){const B=parseD(b),D=parseD(d);if(!B||!D||D<B)return fmtD(d);const days=Math.floor((D-B)/DAY);const wk=Math.floor(days/7);return fmtD(d)+" · "+(wk<26?wk+" wks":Math.floor(days/30.44)+" mo")}
+
+function viewHealth(p){
+  const vax=sortBy(p.vaccines||[],"date",-1);
+  const meds=p.meds||[];
+  const visits=sortBy(p.visits||[],"date",-1);
+  return `<div class="sechead"><h3 style="font:800 30px/1.1 var(--display);margin:0">Health</h3></div>
+  ${questionsSection(p)}
+  ${planSection(p)}
+  <section class="sec"><div class="sechead"><h3>Vaccines</h3><button class="link" data-act="vax-new">+ Add</button></div><div class="card list">${vax.length?vax.map(v=>{const d=superseded(p,v)?null:daysUntil(v.due);const st=d==null?null:d<0?["bad","Overdue"]:d<=30?["warn","Due "+fmtShort(v.due)]:["good","Next "+fmtShort(v.due)];
+    return `<div class="row"><div class="main"><div class="t">${esc(v.name)}</div><div class="s">Given ${fmtD(v.date)}${v.vet?" · "+esc(v.vet):""}</div></div>${st?`<span class="pill ${st[0]}">${st[1]}</span>`:""}${v.due&&d!=null&&d>=0?`<button class="icon-btn" data-act="vax-remind" data-id="${v.id}" aria-label="Add reminder">${I.bell}</button>`:""}<button class="icon-btn" data-act="vax-edit" data-id="${v.id}" aria-label="Edit">${I.edit}</button></div>`}).join(""):'<div class="empty">No vaccines logged yet.</div>'}</div></section>
+  <section class="sec"><div class="sechead"><h3>Medications &amp; preventives</h3><button class="link" data-act="med-new">+ Add</button></div><div class="card list">${meds.length?meds.map(m=>{const n=medNext(m);const d=daysUntil(n);const st=d==null?["mute","Not started"]:d<0?["bad",Math.abs(d)+"d late"]:d===0?["warn","Today"]:d<=3?["warn","In "+d+"d"]:["good",fmtShort(n)];
+    return `<div class="row"><div class="main"><div class="t">${esc(m.name)}${m.dose?` <span class="s">· ${esc(m.dose)}</span>`:""}</div><div class="s">${m.every?"Every "+m.every+" days":"As needed"}${m.last?" · last "+fmtShort(m.last):""}</div></div><span class="pill ${st[0]}">${st[1]}</span><button class="btn small ghost" data-act="med-give" data-id="${m.id}">Given</button><button class="icon-btn" data-act="med-edit" data-id="${m.id}" aria-label="Edit">${I.edit}</button></div>`}).join(""):'<div class="empty">Track flea &amp; tick, heartworm, dewormer or any daily meds.</div>'}</div>${isDog(p)?'<p class="note" style="margin:0">In most of Canada, heartworm prevention runs about June to November, and tick prevention whenever it\'s above 4 °C (often spring through fall). Ask your vet what fits your area.</p>':""}</section>
+  <section class="sec"><div class="sechead"><h3>Vet visits &amp; records</h3><button class="link" data-act="visit-new">+ Add</button></div><div class="card list">${visits.length?visits.map(x=>`<div class="row"><div class="date"><b>${parseD(x.date).getDate()}</b><small>${MON[parseD(x.date).getMonth()]}</small></div><div class="main"><div class="t">${esc(x.reason||"Visit")}</div><div class="s">${[x.clinic,x.notes].filter(Boolean).map(esc).join(" · ")||fmtD(x.date)}</div></div>${x.cost?`<span class="pill mute">$${esc(x.cost)}</span>`:""}<button class="icon-btn" data-act="visit-edit" data-id="${x.id}" aria-label="Edit">${I.edit}</button></div>`).join(""):'<div class="empty">Log checkups, sick visits, spay/neuter and test results.</div>'}</div></section>
+  ${p.allergies?`<section class="sec"><div class="sechead"><h3>Allergies &amp; conditions</h3></div><div class="card">${esc(p.allergies)}</div></section>`:""}`;
+}
+
+function viewProfile(p){
+  const kv=[["Species",p.species],["Breed",p.breed],["CKC group",isDog(p)?ckcGroup(p.breed):""],["Sex",p.sex],["Birthday",p.birthday?fmtD(p.birthday)+" · "+ageText(p.birthday):""],["Color / markings",p.color],["Microchip #",p.microchip],["Food",p.food],["Vet",p.vetName],["Vet phone",p.vetPhone],["Insurance",p.insurance],["Allergies",p.allergies],["Notes",p.notes]];
+  return hero(p)+`<section class="sec"><div class="sechead"><h3>Details</h3><button class="link" data-act="pet-edit">Edit</button></div>
+  <div class="card"><dl class="kv">${kv.filter(([k,v])=>k!=="CKC group"||v).map(([k,v])=>`<dt>${k}</dt><dd>${v?esc(v):'<span class="s" style="color:var(--muted)">—</span>'}</dd>`).join("")}</dl></div></section>
+  ${p.vetPhone?`<section class="sec"><div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div style="min-width:0"><div class="eyebrow">Call the vet</div><div style="font:800 22px var(--display);user-select:all">${esc(p.vetPhone)}</div></div><button class="btn small ghost" data-act="copy" data-v="${esc(p.vetPhone)}">Copy</button></div></section>`:""}
+  ${p.microchip?`<section class="sec"><div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div style="min-width:0"><div class="eyebrow">Microchip</div><div style="font:600 18px var(--body);font-variant-numeric:tabular-nums;user-select:all;overflow-wrap:anywhere">${esc(p.microchip)}</div></div><button class="btn small ghost" data-act="copy" data-v="${esc(p.microchip)}">Copy</button></div></section>`:""}
+  ${borderSection(p)}`;
+}
+
+/* ---------- forms ---------- */
+let formCtx=null;
+function openForm(o){
+  formCtx=o;S.confirmDel=false;
+  const f=o.fields.map(fd=>{
+    const val=o.values[fd.k]!=null?o.values[fd.k]:(fd.def!=null?fd.def:"");
+    const id="f_"+fd.k;
+    let inp;
+    if(fd.type==="select")inp=`<select id="${id}" name="${fd.k}">${fd.options.map(op=>{const v=typeof op==="object"?op.v:op,l=typeof op==="object"?op.l:op;return `<option value="${esc(v)}"${v===val?" selected":""}>${esc(l)}</option>`}).join("")}</select>`;
+    else if(fd.type==="textarea")inp=`<textarea id="${id}" name="${fd.k}" placeholder="${esc(fd.ph||"")}">${esc(val)}</textarea>`;
+    else if(fd.type==="photo")return `<div class="photo-pick"><span id="ph_prev">${val?`<img class="av" src="${val}" alt="">`:`<span class="av">+</span>`}</span><input type="hidden" id="${id}" name="${fd.k}" value="${esc(val)}"><label class="btn ghost small" for="ph_file" style="cursor:pointer">Choose photo</label><input id="ph_file" type="file" accept="image/*" hidden></div>`;
+    else inp=`<input id="${id}" name="${fd.k}" type="${fd.type||"text"}" value="${esc(val)}" placeholder="${esc(fd.ph||"")}"${fd.type==="number"?' step="any" inputmode="decimal"':""}${fd.req?" required":""}${fd.list?` list="${fd.list}" autocomplete="off"`:""}>`;
+    return `<div class="field${fd.half?" half":""}"><label for="${id}">${esc(fd.label)}</label>${inp}</div>`;
+  });
+  // pair half fields
+  let html="",buf=[];o.fields.forEach((fd,i)=>{if(fd.half){buf.push(f[i]);if(buf.length===2){html+=`<div class="grid2">${buf.join("")}</div>`;buf=[]}}else{if(buf.length){html+=`<div class="grid2">${buf.join("")}</div>`;buf=[]}html+=f[i]}});if(buf.length)html+=`<div class="grid2">${buf.join("")}</div>`;
+  $("#panel").innerHTML=`<form id="frm" novalidate style="display:flex;flex-direction:column;gap:14px"><h3>${esc(o.title)}</h3>${html}<div id="confirmBox"></div><div class="acts">${o.onDelete?`<button type="button" class="btn danger small" data-act="del-ask">Delete</button>`:""}<div class="r"><button type="button" class="btn ghost" data-act="close">Cancel</button><button type="submit" class="btn">Save</button></div></div></form>`;
+  $("#sheet").hidden=false;
+  const first=$("#panel").querySelector("input:not([type=hidden]),select,textarea");if(first&&!o.values.id)setTimeout(()=>first.focus({preventScroll:true}),50);
+  const fi=$("#ph_file");if(fi)fi.addEventListener("change",onPhoto);
+  $("#frm").addEventListener("submit",e=>{e.preventDefault();const vals={};new FormData(e.target).forEach((v,k)=>vals[k]=typeof v==="string"?v.trim():v);
+    const miss=o.fields.find(fd=>fd.req&&!vals[fd.k]);if(miss){toast(miss.label+" is required.");const el=$("#f_"+miss.k);el&&el.focus();return}
+    o.fields.forEach(fd=>{if(fd.type==="number"&&vals[fd.k]!=="")vals[fd.k]=Number(vals[fd.k])});
+    if(o.unitField&&prefs.unit==="kg"&&vals[o.unitField]!=="")vals[o.unitField]=+(vals[o.unitField]/KG).toFixed(2);
+    closeSheet();o.onSave(vals)});
+}
+function closeSheet(){$("#sheet").hidden=true;$("#panel").innerHTML="";formCtx=null}
+function onPhoto(e){
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const M=360;const s=Math.min(1,M/Math.max(img.width,img.height));const c=document.createElement("canvas");
+    // square crop from center
+    const side=Math.min(img.width,img.height),sx=(img.width-side)/2,sy=(img.height-side)/2,out=Math.min(M,side);c.width=c.height=out;c.getContext("2d").drawImage(img,sx,sy,side,side,0,0,out,out);
+    const url=c.toDataURL("image/jpeg",0.78);$("#f_photo").value=url;$("#ph_prev").innerHTML=`<img class="av" src="${url}" alt="">`};img.onerror=()=>toast("That photo couldn't be read. Try a JPG or PNG.");img.src=r.result};r.readAsDataURL(file);
+}
+
+const PET_FIELDS=[
+ {k:"photo",type:"photo",label:"Photo"},
+ {k:"name",label:"Name",req:true,ph:"Biscuit"},
+ {k:"species",label:"Species",type:"select",options:["Dog","Cat","Rabbit","Bird","Other"],half:true},
+ {k:"sex",label:"Sex",type:"select",options:["Female","Male","Female (spayed)","Male (neutered)"],half:true},
+ {k:"breed",label:"Breed (CKC list or type your own)",ph:"Retriever (Golden)",list:"breeds"},
+ {k:"birthday",label:"Birthday",type:"date"},
+ {k:"color",label:"Color / markings",ph:"Cream with white chest"},
+ {k:"microchip",label:"Microchip #",ph:"15-digit number",half:true},
+ {k:"insurance",label:"Insurance",ph:"Provider & policy",half:true},
+ {k:"vetName",label:"Vet / clinic",half:true},
+ {k:"vetPhone",label:"Vet phone",type:"tel",half:true},
+ {k:"food",label:"Food",ph:"Brand, amount, times per day"},
+ {k:"allergies",label:"Allergies & conditions",type:"textarea"},
+ {k:"notes",label:"Notes",type:"textarea"}
+];
+function petForm(p){
+  openForm({title:p?"Edit "+p.name:"New pet",fields:PET_FIELDS,values:p||{},
+    onSave(v){if(p){const c=clone(p);Object.assign(c,v);persistPet(c);toast("Saved")}else{const n=Object.assign({id:uid(),createdAt:Date.now(),weights:[],vaccines:[],meds:[],visits:[],appts:[]},v);prefs.cur=n.id;prefs.tab="home";savePrefs();persistPet(n);toast("Welcome, "+n.name)}},
+    onDelete:p?()=>{removePet(p.id);toast(p.name+" was removed")}:null,delLabel:p?"Delete "+p.name+" and all their records?":""});
+}
+function listForm(listKey,item,title,fields,extra={}){
+  openForm(Object.assign({title,fields,values:item||{},
+    onSave(v){update(c=>{c[listKey]=c[listKey]||[];if(item){const i=c[listKey].findIndex(x=>x.id===item.id);c[listKey][i]=Object.assign({},item,v)}else c[listKey].push(Object.assign({id:uid()},v))});toast("Saved")},
+    onDelete:item?()=>{update(c=>{c[listKey]=c[listKey].filter(x=>x.id!==item.id)});toast("Deleted")}:null,delLabel:"Delete this entry?"},extra));
+}
+const W_FIELDS=()=>[{k:"date",label:"Date",type:"date",def:todayISO(),req:true,half:true},{k:"lb",label:"Weight ("+prefs.unit+")",type:"number",req:true,half:true},{k:"height",label:"Height at shoulder (in)",type:"number"},{k:"note",label:"Note",ph:"After breakfast, vet scale"}];
+const MED_FIELDS=[{k:"name",label:"Medication / preventive",req:true,ph:"Heartworm, flea & tick…"},{k:"dose",label:"Dose",ph:"1 chew, 25–50 lb",half:true},{k:"every",label:"Repeat every (days)",type:"number",def:30,half:true},{k:"last",label:"Last given",type:"date",def:todayISO()},{k:"notes",label:"Notes",type:"textarea"}];
+const VISIT_FIELDS=[{k:"date",label:"Date",type:"date",def:todayISO(),req:true,half:true},{k:"cost",label:"Cost ($)",type:"number",half:true},{k:"reason",label:"Reason",req:true,ph:"Wellness check, spay, ear infection…"},{k:"clinic",label:"Clinic / vet"},{k:"notes",label:"Findings & instructions",type:"textarea"}];
+
+function findIn(k,id){const p=cur();return p&&(p[k]||[]).find(x=>x.id===id)}
+function weightItemForForm(w){if(!w)return null;const c=clone(w);if(prefs.unit==="kg"&&c.lb!=="")c.lb=+(c.lb*KG).toFixed(2);return c}
+
+/* ---------- sample ---------- */
+function samplePet(){
+  const b=addDays(todayISO(),-15*7);const d=n=>addDays(b,n*7);
+  const ws=[[8,7.4],[9,8.6],[10,10.1],[11,11.5],[12,13.2],[13,14.6],[14,16.3],[15,17.8]].map(([wk,lb])=>({id:uid(),date:d(wk),lb,height:"",note:""}));
+  return {id:uid(),createdAt:Date.now(),name:"Biscuit (example)",species:"Dog",breed:"Retriever (Golden)",sex:"Female",birthday:b,color:"Cream",microchip:"985112009876543",vetName:"Example Animal Hospital",vetPhone:"(555) 010-0199",food:"Puppy kibble, 1 cup 3× a day",allergies:"",notes:"Example pet — delete it from Profile → Edit when you're done exploring.",insurance:"",
+    weights:ws,questions:[{id:uid(),text:"She scratches her left ear a lot. Ear infection?",date:addDays(todayISO(),-3),status:"open"},{id:uid(),text:"When should we book her spay?",date:addDays(todayISO(),-6),status:"open"},{id:uid(),text:"How much should she eat at this age?",date:d(10),status:"asked",askedDate:d(11),answer:"1 cup 3 times a day until 6 months."}],
+    vaccines:[{id:uid(),name:"DA2PP",date:d(7),due:d(11),vet:"Breeder"},{id:uid(),name:"DA2PP",date:d(11),due:d(16),vet:"Example Animal Hospital"},{id:uid(),name:"Bordetella",date:d(11),due:addDays(d(11),365),vet:"Example Animal Hospital"}],
+    meds:[{id:uid(),name:"Heartworm preventive",dose:"1 chew",every:30,last:addDays(todayISO(),-28)},{id:uid(),name:"Flea & tick",dose:"1 chew",every:30,last:addDays(todayISO(),-12)}],
+    visits:[{id:uid(),date:d(11),reason:"Puppy wellness exam",clinic:"Example Animal Hospital",notes:"Healthy. Second round of shots.",cost:85}],
+    appts:[{id:uid(),type:"Vet",when:d(11)+"T09:30",title:"Puppy wellness exam",where:"Example Animal Hospital",cost:85,done:true,remind:"1 day before"},
+      {id:uid(),type:"Grooming",when:addDays(todayISO(),-9)+"T11:00",title:"Puppy bath & nail trim",where:"Bubbles Grooming",cost:45,done:true,remind:"1 day before"},
+      {id:uid(),type:"Training",when:addDays(todayISO(),-1)+"T18:00",title:"Puppy class week 1",where:"Downtown Dog School",cost:"",remind:"1 day before"},
+      {id:uid(),type:"Vet",when:addDays(todayISO(),1)+"T10:30",title:"Puppy shots, round 3",where:"Example Animal Hospital",cost:"",remind:"1 day before"},
+      {id:uid(),type:"Training",when:addDays(todayISO(),6)+"T18:00",title:"Puppy class week 2",where:"Downtown Dog School",cost:120,remind:"1 day before"}]};
+}
+
+/* ---------- version ---------- */
+const APP_VERSION="1.2.1",DATA_VERSION=1;
+const VERSIONS=[
+ {v:"1.2.1",date:"2026-11-10",items:["New name: Pawlette is now Pupdate","Your pets, records and backups carry over unchanged"]},
+ {v:"1.2.0",date:"2026-11-10",items:["Calendar: tap a day to book, track costs, and add reminders to your phone's calendar","Canadian puppy and young-dog vaccine schedule: check off each shot, and next-due dates fill in for you","Ask-the-vet list, US border checklist, Canadian Kennel Club breed list and this Settings page"]},
+ {v:"1.1.1",date:"2026-11-10",items:["Fixed one slanted word on the welcome screen"]},
+ {v:"1.1.0",date:"2026-11-10",items:["New rounded, easier-to-read font","Softer pastel colours and a new app icon"]},
+ {v:"1.0.0",date:"2026-11-10",items:["Runs on its own, with no account","Works offline, installs to the Home Screen","Backup and restore"]}
+];
+
+/* ---------- Canadian Kennel Club breeds ---------- */
+const CKC_GROUPS={1:"Sporting",2:"Hounds",3:"Working",4:"Terriers",5:"Toys",6:"Non-Sporting",7:"Herding"};
+const CKC_RAW=`1|Barbet|Braque Français (Gascogne)|Braque Français (Pyrénées)|Braque d'Auvergne|Griffon (Wire Haired Pointing)|Lagotto Romagnolo|Pointer|Pointer (German Long-haired)|Pointer (German Short-haired)|Pointer (German Wire-haired)|Pudelpointer|Retriever (Chesapeake Bay)|Retriever (Curly-coated)|Retriever (Flat-coated)|Retriever (Golden)|Retriever (Labrador)|Retriever (Nova Scotia Duck Tolling)|Setter (English)|Setter (Gordon)|Setter (Irish Red and White)|Setter (Irish)|Spaniel (American Cocker)|Spaniel (American Water)|Spaniel (Blue Picardy)|Spaniel (Brittany)|Spaniel (Clumber)|Spaniel (English Cocker)|Spaniel (English Springer)|Spaniel (Field)|Spaniel (French)|Spaniel (Irish Water)|Spaniel (Sussex)|Spaniel (Welsh Springer)|Spinone Italiano|Vizsla (Smooth-Haired)|Vizsla (Wire-haired)|Weimaraner
+2|Afghan Hound|Azawakh|Basenji|Basset Hound|Beagle|Bloodhound|Borzoi|Coonhound (Black & Tan)|Dachshund (Miniature Long-haired)|Dachshund (Miniature Smooth-Haired)|Dachshund (Miniature Wire-haired)|Dachshund (Standard Long-haired)|Dachshund (Standard Smooth)|Dachshund (Standard Wire-haired)|Deerhound (Scottish)|Drever|Finnish Spitz|Foxhound (American)|Foxhound (English)|Grand Basset Griffon Vendeen|Greyhound|Harrier|Ibizan Hound|Irish Wolfhound|Norrbottenspets|Norwegian Elkhound|Norwegian Lundehund|Otterhound|Petit Basset Griffon Vendeen|Pharaoh Hound|Rhodesian Ridgeback|Saluki|Shikoku|Whippet|Peruvian Hairless Dog
+3|Akita|Alaskan Malamute|Anatolian Shepherd Dog|Bernese Mountain Dog|Black Russian Terrier|Boxer|Bullmastiff|Canaan Dog|Canadian Eskimo Dog|Cane Corso (Listed)|Czechoslovakian Vlciak|Doberman Pinscher|Dogue de Bordeaux|Entlebucher Mountain Dog|Eurasier|Great Dane|Great Pyrenees|Greater Swiss Mountain Dog|Greenland Dog|Hovawart|Karelian Bear Dog|Komondor|Kuvasz|Leonberger|Mastiff|Neapolitan Mastiff|Newfoundland|Portuguese Water Dog|Rottweiler|Samoyed|Schnauzer (Giant)|Schnauzer (Standard)|Siberian Husky|Saint Bernard|Tibetan Mastiff|Yakutian Laika
+4|Airedale Terrier|American Hairless Terrier|American Staffordshire Terrier|Australian Terrier|Bedlington Terrier|Border Terrier|Bull Terrier|Bull Terrier (Miniature)|Cairn Terrier|Cesky Terrier|Dandie Dinmont Terrier|Fox Terrier (Smooth)|Fox Terrier (Wire)|Glen of Imaal Terrier|Irish Terrier|Kerry Blue Terrier|Lakeland Terrier|Manchester Terrier|Norfolk Terrier|Norwich Terrier|Parson Russell Terrier|Rat Terrier|Russell Terrier|Schnauzer (Miniature)|Scottish Terrier|Sealyham Terrier|Skye Terrier|Soft-coated Wheaten Terrier|Staffordshire Bull Terrier|Welsh Terrier|West Highland White Terrier
+5|Affenpinscher|American Eskimo Dog (Toy)|Biewer Terrier|Cavalier King Charles Spaniel|Chihuahua (Long Coat)|Chihuahua (Short Coat)|Chinese Crested|Coton de Tulear|English Toy Spaniel|Griffon (Brussels)|Havanese|Italian Greyhound|Japanese Chin|Maltese|Miniature Pinscher|Papillon|Pekingese|Pomeranian|Poodle (Toy)|Pug|Russkiy Toy|Silky Terrier|Toy Fox Terrier|Toy Manchester Terrier|Xoloitzcuintli (Toy)|Yorkshire Terrier
+6|American Eskimo Dog (Miniature)|American Eskimo Dog (Standard)|Bichon Frise|Boston Terrier|Bulldog|Chinese Shar-Pei|Chow Chow|Dalmatian|French Bulldog|German Pinscher|Japanese Akita|Japanese Spitz|Keeshond|Lhasa Apso|Lowchen|Poodle (Miniature)|Poodle (Standard)|Schipperke|Shiba Inu|Shih Tzu|Tibetan Spaniel|Tibetan Terrier|Xoloitzcuintli (Miniature)|Xoloitzcuintli (Standard)
+7|Appenzeller Sennenhunde|Australian Cattle Dog|Australian Kelpie|Australian Shepherd|Australian Stumpy Tail Cattle Dog|Bearded Collie|Beauceron|Belgian Shepherd Dog|Berger Picard|Berger des Pyrenees|Bergamasco Shepherd Dog|Border Collie (England)|Bouvier des Flandres|Briard|Collie (Rough)|Collie (Smooth)|Finnish Lapphund|German Shepherd Dog|Iceland Sheepdog|Lancashire Heeler|Miniature American Shepherd|Mudi|Norwegian Buhund|Old English Sheepdog|Polish Lowland Sheepdog|Portuguese Sheepdog|Puli|Schapendoes|Shetland Sheepdog|Spanish Water Dog|Swedish Vallhund|Welsh Corgi (Cardigan)|Welsh Corgi (Pembroke)|Pumi|Swedish Lapphund`;
+const CKC=[];CKC_RAW.trim().split("\n").forEach(l=>{const parts=l.split("|");const g=+parts[0];parts.slice(1).forEach(n=>CKC.push({n,g}))});
+CKC.sort((a,b)=>a.n.localeCompare(b.n));
+const ckcGroup=name=>{const b=CKC.find(x=>x.n.toLowerCase()===String(name||"").trim().toLowerCase());return b?"Group "+b.g+" · "+CKC_GROUPS[b.g]:""};
+
+/* ---------- Canadian vaccine schedule ---------- */
+const isDog=p=>!p.species||/dog/i.test(p.species);
+const addMonths=(s,n)=>{const d=parseD(s);const day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);d.setDate(Math.min(day,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));return iso(d)};
+const VRE={dhpp:/dhpp|da2pp|dapp|dhppi|da2ppv|distemper|parvo|5.?in.?1/i,rabies:/rabies/i,lepto:/lepto/i,lyme:/lyme|borrel/i,bordetella:/bordetella|kennel cough/i};
+const VAX_NAMES={dhpp:"DA2PP",rabies:"Rabies",lepto:"Leptospirosis",lyme:"Lyme",bordetella:"Bordetella"};
+const VAX_PLAN=[
+ {pid:"dhpp1",key:"dhpp",label:"DA2PP #1",sub:"Distemper, adenovirus, parvovirus, parainfluenza",wk:8,win:"6–8 weeks",n:1,core:1},
+ {pid:"dhpp2",key:"dhpp",label:"DA2PP #2",wk:12,win:"10–12 weeks",n:2,core:1},
+ {pid:"rab1",key:"rabies",label:"Rabies",wk:14,win:"12–16 weeks",n:1,core:1,sub:"Required by law in Ontario from 3 months. Needed to cross the border."},
+ {pid:"dhpp3",key:"dhpp",label:"DA2PP #3 (final puppy dose)",wk:16,win:"16 weeks or older",n:3,core:1},
+ {pid:"rabB",key:"rabies",label:"Rabies 1-year booster",after:{key:"rabies",n:1,days:365},wk:66,win:"1 year after the first rabies shot",n:2,core:1,sub:"Then every 1 or 3 years, as your certificate says"},
+ {pid:"dhppB",key:"dhpp",label:"DA2PP 1-year booster",after:{key:"dhpp",n:3,days:365},wk:68,win:"1 year after the final puppy dose",n:4,core:1,sub:"Then every 3 years"},
+ {pid:"bord",key:"bordetella",label:"Bordetella (kennel cough)",wk:10,win:"From 8 weeks, then yearly",n:1,sub:"For daycare, boarding, grooming and classes"},
+ {pid:"lepto1",key:"lepto",label:"Leptospirosis #1",wk:12,win:"12 weeks or older",n:1,sub:"Spread by wildlife and standing water"},
+ {pid:"lepto2",key:"lepto",label:"Leptospirosis #2",after:{key:"lepto",n:1,days:21},wk:15,win:"2–4 weeks after #1, then yearly",n:2},
+ {pid:"lyme1",key:"lyme",label:"Lyme #1",wk:12,win:"12 weeks or older",n:1,sub:"For tick areas, such as much of Ontario, Quebec, the Maritimes and Manitoba"},
+ {pid:"lyme2",key:"lyme",label:"Lyme #2",after:{key:"lyme",n:1,days:21},wk:15,win:"2–4 weeks after #1, then yearly",n:2}
+];
+const vKey=n=>{for(const k in VRE)if(VRE[k].test(n||""))return k;return String(n||"").trim().toLowerCase()};
+const superseded=(p,v)=>(p.vaccines||[]).some(w=>w!==v&&w.id!==v.id&&vKey(w.name)===vKey(v.name)&&(w.date||"")>(v.date||""));
+function vaxDoses(p,key){return sortBy((p.vaccines||[]).filter(v=>VRE[key].test(v.name||"")),"date")}
+function planTarget(p,s){if(s.after){const d=vaxDoses(p,s.after.key)[s.after.n-1];if(d)return addDays(d.date,s.after.days)}return addDays(p.birthday,s.wk*7)}
+function planRec(p,s){const tagged=(p.vaccines||[]).find(v=>v.plan===s.pid);if(tagged)return tagged;const un=vaxDoses(p,s.key).filter(v=>!v.plan);return un.length>=s.n?un[s.n-1]:null}
+function planItems(p){
+  if(!isDog(p)||!p.birthday)return[];const a=ageParts(p.birthday);if(!a||a.weeks>=104)return[];
+  return VAX_PLAN.map((s,i)=>{const rec=planRec(p,s);const done=!!rec;const target=planTarget(p,s);const d=daysUntil(target);
+    const st=done?"done":d<-21?"missed":d<=14?"due":"later";return Object.assign({},s,{i,rec,done,target,d,st})});
+}
+function suggestDue(p,v){
+  const n=v.name||"";if(!v.date)return"";
+  const ageWk=p.birthday?Math.floor((parseD(v.date)-parseD(p.birthday))/DAY/7):null;
+  const prior=k=>vaxDoses(p,k).filter(x=>x.date<=v.date).length;
+  if(VRE.dhpp.test(n)){if(ageWk!=null&&ageWk<16)return addDays(v.date,21);if(prior("dhpp")>=3&&(ageWk==null||ageWk>=52))return addDays(v.date,1095);return addDays(v.date,365)}
+  if(VRE.rabies.test(n))return addDays(v.date,prior("rabies")?1095:365);
+  if(VRE.lepto.test(n))return addDays(v.date,prior("lepto")?365:21);
+  if(VRE.lyme.test(n))return addDays(v.date,prior("lyme")?365:21);
+  if(VRE.bordetella.test(n)||/influenza/i.test(n))return addDays(v.date,365);
+  return"";
+}
+const VAX_FIELDS=[{k:"name",label:"Vaccine",req:true,ph:"DA2PP, Rabies, Leptospirosis…",list:"vaxnames"},{k:"date",label:"Date given",type:"date",def:todayISO(),req:true,half:true},{k:"due",label:"Next due (auto if blank)",type:"date",half:true},{k:"vet",label:"Given by",ph:"Clinic or vet"},{k:"notes",label:"Notes",type:"textarea",ph:"Lot #, reactions…"}];
+function vaxForm(item,presetName){
+  const p=cur();const fields=VAX_FIELDS.map(f=>f.k==="name"&&presetName?Object.assign({},f,{def:presetName}):f);
+  openForm({title:item?"Edit vaccine":presetName?"Log "+presetName:"Add vaccine",fields,values:item||{},
+    onSave(v){let auto=false;if(!v.due&&isDog(p)){v.due=suggestDue(p,v);auto=!!v.due}
+      update(c=>{c.vaccines=c.vaccines||[];if(item){const i=c.vaccines.findIndex(x=>x.id===item.id);c.vaccines[i]=Object.assign({},item,v)}else c.vaccines.push(Object.assign({id:uid()},v))});
+      toast(auto?"Saved · next due "+fmtD(v.due):"Saved")},
+    onDelete:item?()=>{update(c=>{c.vaccines=c.vaccines.filter(x=>x.id!==item.id)});toast("Deleted")}:null,delLabel:"Delete this vaccine?"});
+}
+function planSection(p){
+  const items=planItems(p);if(!items.length)return"";
+  const pill=s=>s.st==="due"?`<span class="pill warn">${s.d<0?"Due now":"Due "+fmtShort(s.target)}</span>`:s.st==="missed"?'<span class="pill mute">Not logged</span>':`<span class="pill mute">${fmtShort(s.target)}</span>`;
+  const row=s=>`<div class="row${s.done?" given":""}"><button class="chk${s.done?" on":""}" data-act="plan-check" data-pid="${s.pid}" role="checkbox" aria-checked="${s.done}" aria-label="${esc(s.label)} given">${s.done?"✓":""}</button><div class="main"><div class="t">${esc(s.label)}</div><div class="s">${s.done?"Given "+fmtD(s.rec.date)+(s.rec.notes&&/estimated/.test(s.rec.notes)?" (estimated)":""):esc(s.win)+(s.sub?" · "+esc(s.sub):"")}</div></div>${s.done?`<button class="icon-btn" data-act="vax-edit" data-id="${s.rec.id}" aria-label="Change date">${I.edit}</button>`:`${pill(s)}${s.st!=="missed"?`<button class="icon-btn" data-act="plan-remind" data-pid="${s.pid}" aria-label="Add reminder">${I.bell}</button>`:""}`}</div>`;
+  const core=items.filter(s=>s.core).sort((a,b)=>a.target<b.target?-1:1),life=items.filter(s=>!s.core);
+  return `<section class="sec"><div class="sechead"><h3>Vaccine schedule</h3><span class="eyebrow">Canada · core</span></div>
+   <div class="card list">${core.map(row).join("")}</div>
+   <div class="sechead" style="margin-top:4px"><h3 style="font-size:18px">Lifestyle vaccines</h3><span class="eyebrow">Ask your vet</span></div>
+   <div class="card list">${life.map(row).join("")}</div>
+   <p class="note" style="margin:0">A typical Canadian schedule for puppies and young dogs. Your vet's plan comes first. Tap the circle to check off a shot (dated today). If it was given a while ago, the usual date is used. Tap the pencil to set the exact date.</p></section>`;
+}
+
+/* ---------- ask the vet ---------- */
+const openQs=p=>(p.questions||[]).filter(q=>q.status!=="asked");
+function questionsSection(p){
+  const open=openQs(p),asked=(p.questions||[]).filter(q=>q.status==="asked").sort((a,b)=>(b.askedDate||"")<(a.askedDate||"")?-1:1);
+  const nextVet=allAppts(p).find(x=>!x.a.done&&!isPast(x.a)&&x.a.type==="Vet");
+  return `<section class="sec"><div class="sechead"><h3>Ask the vet</h3><span class="eyebrow">${open.length} open</span></div>
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+   <form id="qform" class="qform"><input id="q_text" placeholder="Something to bring up, e.g. itchy ears" aria-label="New question for the vet" autocomplete="off"><button class="btn small" type="submit">Add</button></form>
+   ${nextVet&&open.length?`<div class="s" style="color:var(--muted);font-size:13px">These go into the calendar note for <b>${esc(nextVet.a.title||"the vet")}</b> on ${fmtShort(nextVet.a.when)}.</div>`:""}
+   <div class="list">${open.length?open.map(q=>`<div class="row"><div class="main"><div class="t">${esc(q.text)}</div><div class="s">Added ${fmtShort(q.date)}</div></div><button class="btn small ghost" data-act="q-done" data-id="${q.id}">Asked</button><button class="icon-btn" data-act="q-edit" data-id="${q.id}" aria-label="Edit">${I.edit}</button></div>`).join(""):'<div class="empty">Add anything you notice between visits: behaviour, eating, skin, poops, lumps. You\'ll have the list ready at the next appointment.</div>'}</div>
+   ${asked.length?`<details><summary>Answered (${asked.length})</summary><div class="list">${asked.map(q=>`<div class="row"><div class="main"><div class="t">${esc(q.text)}</div><div class="s">${q.answer?"Vet said: "+esc(q.answer):"Asked"}${q.askedDate?" · "+fmtShort(q.askedDate):""}</div></div><button class="icon-btn" data-act="q-edit" data-id="${q.id}" aria-label="Edit">${I.edit}</button></div>`).join("")}</div></details>`:""}
+  </div></section>`;
+}
+function qForm(q,asking){
+  const fields=asking?[{k:"answer",label:"What did the vet say?",type:"textarea",ph:"Advice, meds, next steps"}]:[{k:"text",label:"Question or concern",req:true},{k:"answer",label:"What the vet said",type:"textarea"},{k:"status",label:"Status",type:"select",options:["Open","Answered"]}];
+  openForm({title:asking?"Asked: "+q.text:"Edit question",fields,values:Object.assign({},q,{status:q.status==="asked"?"Answered":"Open"}),
+    onSave(v){update(c=>{const x=c.questions.find(y=>y.id===q.id);if(asking){x.answer=v.answer;x.status="asked";x.askedDate=todayISO()}else{x.text=v.text;x.answer=v.answer;x.status=v.status==="Answered"?"asked":"open";if(x.status==="asked"&&!x.askedDate)x.askedDate=todayISO()}});toast("Saved")},
+    onDelete:()=>{update(c=>{c.questions=c.questions.filter(y=>y.id!==q.id)});toast("Deleted")},delLabel:"Delete this question?"});
+}
+
+/* ---------- border crossing ---------- */
+const CDC_URL="https://www.cdc.gov/importation/dogs/index.html";
+const CFIA_URL="https://inspection.canada.ca/en/importing-food-plants-or-animals/pets";
+function borderSection(p){
+  if(!isDog(p))return"";
+  const six=p.birthday?addMonths(p.birthday,6):null,three=p.birthday?addMonths(p.birthday,3):null;
+  const ageOk=six&&daysUntil(six)<=0,over3=three&&daysUntil(three)<=0;
+  const chip=!!(p.microchip&&String(p.microchip).trim());
+  const cdcUntil=p.cdcForm?addMonths(p.cdcForm,6):null,cdcOk=cdcUntil&&daysUntil(cdcUntil)>=0;
+  const rab=vaxDoses(p,"rabies").slice(-1)[0];const rabUntil=rab?(rab.due||addDays(rab.date,365)):null;const rabOk=rabUntil&&daysUntil(rabUntil)>=0;
+  const ck=(st,t,s,extra="")=>`<div class="row"><span class="ck ${st}">${st==="ok"?"✓":st==="no"?"!":"i"}</span><div class="main"><div class="t">${t}</div><div class="s">${s}</div>${extra}</div></div>`;
+  const usTodo=[ageOk,chip,cdcOk].filter(x=>!x).length;
+  return `<section class="sec"><div class="sechead"><h3>Crossing into the USA</h3>${usTodo?`<span class="pill warn">${usTodo} to do</span>`:'<span class="pill good">Ready</span>'}</div>
+  <div class="card list">
+   ${ck(ageOk?"ok":"no","At least 6 months old",!p.birthday?"Add a birthday in Edit to check this.":ageOk?esc(p.name)+" is "+esc(ageText(p.birthday))+".":"Not old enough yet. "+esc(p.name)+" can cross from <b>"+fmtD(six)+"</b>.")}
+   ${ck(chip?"ok":"no","Microchip",chip?"#"+esc(p.microchip)+". It must be readable by a universal scanner.":"Required. Add the microchip number in Edit, or ask your vet to implant one.")}
+   ${ck(cdcOk?"ok":"no","CDC Dog Import Form receipt",cdcOk?"Submitted "+fmtD(p.cdcForm)+". Good for trips from Canada until "+fmtD(cdcUntil)+". Show it on your phone or on paper.":"Free and online, one per dog. You can do it the day you travel. The receipt is good for 6 months of trips from Canada.",`<div class="ckacts"><a class="btn small ghost" href="${CDC_URL}" target="_blank" rel="noopener">Open CDC page</a><button class="btn small ghost" data-act="cdc-done">${cdcOk?"Update date":"I've submitted it"}</button></div>`)}
+   ${ck("info","Looks healthy at the border","US officers can refuse a dog that looks sick.")}
+   ${ck(rabOk?"ok":"info","Rabies certificate (recommended)",rabOk?"Rabies on record, valid to "+fmtD(rabUntil)+". Bring the signed certificate.":"The CDC doesn't require it for dogs from Canada, but some US states do and you need it to come home.")}
+  </div></section>
+  <section class="sec"><div class="sechead"><h3>Coming back to Canada</h3></div>
+  <div class="card list">
+   ${ck(!over3?"info":rabOk?"ok":"no","Rabies vaccination certificate",!p.birthday?"Required for dogs over 3 months.":!over3?"Under 3 months: no rabies shot needed, but bring proof of age, such as breeder papers.":rabOk?"Required for dogs over 3 months, issued by a licensed vet. Yours is on record.":"Required for dogs over 3 months, issued by a licensed vet. Log the rabies shot under Health.")}
+   ${ck("info","Bring original documents","Border services recommend carrying the originals, plus proof that the dog is yours.")}
+   ${ck("info","Recent travel","If your dog was in a high-risk rabies country in the last 6 months, different rules apply. Check before you go.")}
+  </div>
+  <p class="note" style="margin:0">Checked November 2026 against the CDC, the CFIA (via USDA's summary) and CBSA. Rules can change, so check again before each trip: <a href="${CDC_URL}" target="_blank" rel="noopener">cdc.gov</a> · <a href="${CFIA_URL}" target="_blank" rel="noopener">inspection.canada.ca</a></p></section>`;
+}
+
+/* ---------- settings ---------- */
+function whatsNewList(n){return VERSIONS.slice(0,n).map((r,i)=>`<div class="ver"><div class="verhead"><b>v${r.v}</b>${i===0?'<span class="pill good">Current</span>':""}<span class="s">${fmtD(r.date)}</span></div><ul>${r.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+function viewSettings(){
+  return `<div class="sechead"><button class="link" data-act="tab" data-tab="${prefs.lastTab||"home"}">‹ Back</button></div>
+  <h3 style="font:800 30px/1.1 var(--display);margin:0">Settings</h3>
+  <section class="sec"><div class="sechead"><h3>What's new</h3><span class="eyebrow">Last 3 versions</span></div><div class="card" style="display:flex;flex-direction:column;gap:14px">${whatsNewList(3)}</div></section>
+  <section class="sec"><div class="sechead"><h3>Units</h3></div><div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Weight</span><div class="seg" role="group" aria-label="Units"><button class="${prefs.unit==="lb"?"on":""}" data-act="unit" data-u="lb">lb</button><button class="${prefs.unit==="kg"?"on":""}" data-act="unit" data-u="kg">kg</button></div></div></section>
+  <section class="sec"><div class="sechead"><h3>Backup &amp; restore</h3><span class="eyebrow">${prefs.lastBackup?"Last "+fmtShort(prefs.lastBackup):"Never backed up"}</span></div>
+  <div class="card" style="display:flex;flex-direction:column;gap:12px"><p style="margin:0;color:var(--muted);font-size:14px">Everything is saved privately on this phone, with no account and no cloud. Save a backup file now and then (to Files or iCloud Drive) so you can restore it on a new phone or share it with someone who helps care for your pets.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn small" data-act="backup">Save a backup</button><button class="btn ghost small" data-act="restore">Restore from backup</button></div></div></section>
+  ${installHint()}
+  <section class="sec"><div class="sechead"><h3>About</h3></div><div class="card"><dl class="kv"><dt>Version</dt><dd><b>${APP_VERSION}</b></dd><dt>Released</dt><dd>${fmtD(VERSIONS[0].date)}</dd><dt>Version numbers</dt><dd>MAJOR.MINOR.PATCH. A new first number means a big change and you should save a backup before updating. A new middle number means new features. A new last number means fixes.</dd><dt>Breed list</dt><dd>Canadian Kennel Club, ${CKC.length} breeds</dd></dl></div></section>`;
+}
+function showWhatsNew(){
+  formCtx={};
+  $("#panel").innerHTML=`<div style="display:flex;flex-direction:column;gap:14px"><h3>What's new in ${APP_VERSION}</h3>${whatsNewList(1).replace('<span class="pill good">Current</span>',"")}<button class="btn" data-act="close">Got it</button><button class="link" data-act="settings">See earlier versions</button></div>`;
+  $("#sheet").hidden=false;
+}
+
+/* ---------- calendar, costs & reminders ---------- */
+const REMIND={"1 day before":1440,"2 days before":2880,"1 week before":10080,"1 hour before":60,"No reminder":0};
+const APPT_TYPES=["Vet","Grooming","Training","Daycare","Boarding","Other"];
+const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const WDL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const petColor=pt=>"var(--p"+((S.pets.findIndex(x=>x.id===pt.id)%4)+1)+")";
+const money=n=>{n=Number(n)||0;return "$"+n.toLocaleString("en-US",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2})};
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+function allAppts(scopePet){return (scopePet?[scopePet]:S.pets).flatMap(pt=>(pt.appts||[]).map(a=>({a,pt}))).sort((x,y)=>x.a.when<y.a.when?-1:x.a.when>y.a.when?1:0)}
+function findAppt(id){for(const pt of S.pets){const a=(pt.appts||[]).find(x=>x.id===id);if(a)return {a,pt}}return null}
+const minsUntil=w=>{const d=parseD(w);return d?(d-new Date())/60000:null};
+const isPast=a=>minsUntil(a.when)<0;
+const apptName=(a,pt)=>(S.pets.length>1?pt.name+": ":"")+(a.title||a.type);
+
+function calState(){
+  if(S.calY==null){const n=new Date();S.calY=n.getFullYear();S.calM=n.getMonth();S.calDay=todayISO()}
+  if(!S.calScope)S.calScope="all";
+}
+function viewCal(p){
+  calState();
+  const scopePet=S.calScope==="pet"||S.pets.length<2?p:null;
+  const list=allAppts(scopePet);
+  const byDay={};list.forEach(x=>{const k=x.a.when.slice(0,10);(byDay[k]=byDay[k]||[]).push(x)});
+  const first=new Date(S.calY,S.calM,1);const start=new Date(first);start.setDate(1-first.getDay());
+  let cells="";for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=iso(d);const ev=byDay[k]||[];
+    if(i===35&&d.getMonth()!==S.calM)break;
+    cells+=`<button class="d${d.getMonth()!==S.calM?" out":""}${k===todayISO()?" today":""}${k===S.calDay?" sel":""}" data-act="cal-day" data-d="${k}" aria-label="${MONL[d.getMonth()]} ${d.getDate()}${ev.length?", "+ev.length+" appointment"+(ev.length>1?"s":""):""}"><span class="n">${d.getDate()}</span><span class="dots">${ev.slice(0,3).map(x=>`<i style="background:${petColor(x.pt)}"></i>`).join("")}</span></button>`}
+  const sel=parseD(S.calDay);const dayList=byDay[S.calDay]||[];
+  const row=(x,showDate)=>{const a=x.a,pt=x.pt;const past=isPast(a);const d=parseD(a.when);
+    const status=a.done?`<span class="pill good">Done</span>`:past?`<button class="btn small" data-act="appt-log" data-id="${a.id}">Log it</button>`:`<button class="icon-btn" data-act="appt-remind" data-id="${a.id}" aria-label="Add reminder to calendar" title="Add reminder">${I.bell}</button>`;
+    return `<div class="row">${showDate?`<div class="date"><b>${d.getDate()}</b><small>${MON[d.getMonth()]}</small></div>`:`<div class="time">${fmtTime(a.when)||"—"}</div>`}<div class="main"><div class="t">${esc(a.title||a.type)}</div><div class="s"><span class="petdot" style="background:${petColor(pt)}"></span>${esc(pt.name)} · ${esc(a.type)}${showDate&&fmtTime(a.when)?" · "+fmtTime(a.when):""}${a.where?" · "+esc(a.where):""}${a.type==="Vet"&&!a.done&&!past&&openQs(pt).length?` · <b>${openQs(pt).length} to ask</b>`:""}</div></div>${a.cost?`<span class="pill mute">${money(a.cost)}</span>`:""}${status}<button class="icon-btn" data-act="appt-edit" data-id="${a.id}" aria-label="Edit">${I.edit}</button></div>`};
+  const upcoming=list.filter(x=>!x.a.done&&!isPast(x.a)).slice(0,5);
+  const toLog=list.filter(x=>!x.a.done&&isPast(x.a)).reverse();
+  // costs
+  const now=new Date();const ym=iso(now).slice(0,7),y=String(now.getFullYear());
+  const spent=list.filter(x=>x.a.cost&&(x.a.done||isPast(x.a)));
+  const sum=arr=>arr.reduce((s,x)=>s+(Number(x.a.cost)||0),0);
+  const mTot=sum(spent.filter(x=>x.a.when.startsWith(ym))),yTot=sum(spent.filter(x=>x.a.when.startsWith(y))),all=sum(spent);
+  const booked=sum(list.filter(x=>x.a.cost&&!x.a.done&&!isPast(x.a)));
+  const yr=spent.filter(x=>x.a.when.startsWith(y));
+  const byType=APPT_TYPES.map(t=>[t,sum(yr.filter(x=>x.a.type===t))]).filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]);
+  const byPet=S.pets.map(pt=>[pt,sum(yr.filter(x=>x.pt.id===pt.id))]).filter(r=>r[1]>0);
+  const mx=Math.max(1,...byType.map(r=>r[1]));const mxp=Math.max(1,...byPet.map(r=>r[1]));
+  return `<div class="sechead"><h3 style="font:800 30px/1.1 var(--display);margin:0">Calendar</h3><button class="btn" data-act="appt-new" data-d="${S.calDay}">+ Book</button></div>
+  ${S.pets.length>1?`<div class="seg" role="group" aria-label="Show"><button class="${S.calScope==="all"?"on":""}" data-act="cal-scope" data-s="all">All pets</button><button class="${S.calScope==="pet"?"on":""}" data-act="cal-scope" data-s="pet">${esc(p.name)}</button></div>`:""}
+  <div class="card calcard">
+    <div class="calhead"><button class="icon-btn" data-act="cal-nav" data-n="-1" aria-label="Previous month">‹</button><b>${MONL[S.calM]} ${S.calY}</b><button class="icon-btn" data-act="cal-nav" data-n="1" aria-label="Next month">›</button><button class="link" data-act="cal-today">Today</button></div>
+    <div class="cal">${WD.map(w=>`<span class="wd">${w[0]}</span>`).join("")}${cells}</div>
+  </div>
+  <section class="sec"><div class="sechead"><h3>${WDL[sel.getDay()]}, ${MON[sel.getMonth()]} ${sel.getDate()}</h3><button class="link" data-act="appt-new" data-d="${S.calDay}">+ Add on this day</button></div>
+   <div class="card list">${dayList.length?dayList.map(x=>row(x,false)).join(""):`<div class="empty">Nothing booked. Tap "Add on this day" to book an appointment.</div>`}</div></section>
+  ${toLog.length?`<section class="sec"><div class="sechead"><h3>Needs logging</h3><span class="eyebrow">${toLog.length} past</span></div><div class="card list">${toLog.map(x=>row(x,true)).join("")}</div><p class="note" style="margin:0">Tap "Log it" to mark an appointment done and record what it cost.</p></section>`:""}
+  <section class="sec"><div class="sechead"><h3>Coming up</h3></div><div class="card list">${upcoming.length?upcoming.map(x=>row(x,true)).join(""):'<div class="empty">No upcoming appointments.</div>'}</div></section>
+  <section class="sec"><div class="sechead"><h3>Costs</h3><span class="eyebrow">${scopePet?esc(scopePet.name):"All pets"}</span></div>
+   <div class="stats"><div class="stat"><span class="eyebrow">${MONL[now.getMonth()]}</span><b>${money(mTot)}</b><small>this month</small></div><div class="stat"><span class="eyebrow">${y}</span><b>${money(yTot)}</b><small>this year</small></div><div class="stat"><span class="eyebrow">All time</span><b>${money(all)}</b><small>${booked?money(booked)+" booked ahead":"logged"}</small></div></div>
+   <div class="card" style="display:flex;flex-direction:column;gap:12px">${byType.length?`<div class="eyebrow">${y} by type</div>`+byType.map(([t,v])=>`<div class="barrow"><span>${t}</span><div class="bar"><i style="width:${(v/mx*100).toFixed(1)}%"></i></div><b>${money(v)}</b></div>`).join("")+(byPet.length>1&&!scopePet?`<div class="eyebrow" style="margin-top:6px">${y} by pet</div>`+byPet.map(([pt,v])=>`<div class="barrow"><span>${esc(pt.name)}</span><div class="bar"><i style="width:${(v/mxp*100).toFixed(1)}%;background:${petColor(pt)}"></i></div><b>${money(v)}</b></div>`).join(""):""):`<div class="empty">Add a cost to an appointment (or tap "Log it" after it happens) to see what you spend on vet, grooming, training and more.</div>`}</div></section>`;
+}
+
+function apptForm(found,presetDay){
+  const a=found&&found.a,pt0=found?found.pt:cur();
+  const fields=[];
+  if(S.pets.length>1)fields.push({k:"pet",label:"Pet",type:"select",options:S.pets.map(x=>({v:x.id,l:x.name}))});
+  fields.push({k:"type",label:"Type",type:"select",options:APPT_TYPES,half:true},{k:"when",label:"Date & time",type:"datetime-local",req:true,half:true},
+    {k:"title",label:"What",ph:"Puppy shots round 3"},{k:"where",label:"Where",ph:"Clinic, groomer, trainer"},
+    {k:"cost",label:"Cost ($)",type:"number",half:true,ph:"0"},{k:"remind",label:"Remind me",type:"select",options:Object.keys(REMIND),half:true});
+  if(a)fields.push({k:"status",label:"Status",type:"select",options:["Upcoming","Done"]});
+  fields.push({k:"notes",label:"Notes",type:"textarea",ph:"What to bring, questions for the vet…"});
+  const values=Object.assign({remind:"1 day before"},a||{},{pet:pt0.id,status:a&&a.done?"Done":"Upcoming"});
+  if(!a&&presetDay)values.when=presetDay+"T09:00";
+  openForm({title:a?"Edit appointment":"Book appointment",fields,values,
+    onSave(v){
+      const pid=v.pet||pt0.id;const item=Object.assign({},a||{id:uid()},{type:v.type,when:v.when,title:v.title,where:v.where,cost:v.cost===""?"":v.cost,remind:v.remind,notes:v.notes,done:v.status==="Done"});
+      if(found&&found.pt.id!==pid){const old=clone(found.pt);old.appts=old.appts.filter(x=>x.id!==item.id);persistPet(old)}
+      const tgt=clone(S.pets.find(x=>x.id===pid));tgt.appts=tgt.appts||[];const i=tgt.appts.findIndex(x=>x.id===item.id);if(i<0)tgt.appts.push(item);else tgt.appts[i]=item;
+      S.calDay=item.when.slice(0,10);const d=parseD(item.when);S.calY=d.getFullYear();S.calM=d.getMonth();
+      persistPet(tgt);
+      if(!a&&!item.done&&!isPast(item)&&REMIND[item.remind])remindSheet(item,tgt,true);else toast("Saved");
+    },
+    onDelete:a?()=>{const c=clone(found.pt);c.appts=c.appts.filter(x=>x.id!==a.id);persistPet(c);toast("Deleted")}:null,delLabel:"Delete this appointment?"});
+}
+function logForm(found){
+  const a=found.a;
+  openForm({title:"Log: "+(a.title||a.type),fields:[{k:"cost",label:"What did it cost? ($)",type:"number",ph:"0"},{k:"notes",label:"Notes",type:"textarea",ph:"How it went, next steps, receipt #"}],values:{cost:a.cost,notes:a.notes},
+    onSave(v){const c=clone(found.pt);const x=c.appts.find(y=>y.id===a.id);Object.assign(x,{cost:v.cost===""?"":v.cost,notes:v.notes,done:true});persistPet(c);toast("Logged"+(v.cost?" · "+money(v.cost):""))}});
+}
+
+/* calendar files & links */
+const icsEsc=s=>String(s||"").replace(/\\/g,"\\\\").replace(/;/g,"\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n");
+const icsTime=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";
+function eventInfo(a,pt){const s=parseD(a.when);const e=new Date(s.getTime()+3600000);
+  const title=pt.name+" – "+(a.title?a.type+": "+a.title:a.type);
+  const qs=(a.type==="Vet"||a.type==="Vaccine")?openQs(S.pets.find(x=>x.id===pt.id)||pt):[];
+  const desc=[a.notes,a.cost?"Cost: "+money(a.cost):"",qs.length?"Questions for the vet:\n"+qs.map(q=>"• "+q.text).join("\n"):"","Added from Pupdate"].filter(Boolean).join("\n");return {s,e,title,desc}}
+function buildICS(a,pt){const {s,e,title,desc}=eventInfo(a,pt);const m=REMIND[a.remind]||0;
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Pupdate//Pet care//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:"+a.id+"@pawlette","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),"DTSTART:"+icsTime(s),"DTEND:"+icsTime(e),"SUMMARY:"+icsEsc(title)];
+  if(a.where)L.push("LOCATION:"+icsEsc(a.where));L.push("DESCRIPTION:"+icsEsc(desc));
+  if(m)L.push("BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(title),"TRIGGER:-PT"+m+"M","END:VALARM");
+  L.push("END:VEVENT","END:VCALENDAR");return L.join("\r\n")+"\r\n"}
+function googleLink(a,pt){const {s,e,title,desc}=eventInfo(a,pt);return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(title)+"&dates="+icsTime(s)+"/"+icsTime(e)+"&details="+encodeURIComponent(desc)+(a.where?"&location="+encodeURIComponent(a.where):"")}
+function saveICS(a,pt){
+  const blob=new Blob([buildICS(a,pt)],{type:"text/calendar;charset=utf-8"});
+  const name=(pt.name+"-"+(a.title||a.type)).replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()+".ics";
+  const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download=name;document.body.appendChild(link);link.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);link.remove()},4000);
+  S.lastICS=name;
+}
+function remindSheet(a,pt,justBooked){
+  formCtx={};S.remEv={a,pt};
+  const {title}=eventInfo(a,pt);const r=a.remind&&REMIND[a.remind]?a.remind:"No reminder";
+  $("#panel").innerHTML=`<div style="display:flex;flex-direction:column;gap:14px"><h3>${justBooked?"Booked! Add a reminder?":"Add a reminder"}</h3>
+   <div class="card" style="box-shadow:none"><div class="t" style="font-weight:700">${esc(title)}</div><div class="s" style="color:var(--muted)">${fmtD(a.when)} · ${fmtTime(a.when)}${a.where?" · "+esc(a.where):""}</div><div class="s" style="color:var(--muted);margin-top:4px">${I.bell} Alert: ${esc(r.toLowerCase())}</div></div>
+   <p style="margin:0;color:var(--muted);font-size:14px">Your phone's calendar will send the reminder, even when Pupdate is closed.${(a.type==="Vet"||a.type==="Vaccine")&&openQs(pt).length?" Your "+openQs(pt).length+" open vet question"+(openQs(pt).length>1?"s are":" is")+" added to the event notes.":""}</p>
+   <button class="btn" data-act="ics" data-id="${a.id}">Add to iPhone Calendar</button>
+   <a class="btn ghost" style="text-align:center;text-decoration:none" href="${esc(googleLink(a,pt))}" target="_blank" rel="noopener">Add to Google Calendar</a>
+   <button class="btn ghost" data-act="close">Not now</button></div>`;
+  $("#sheet").hidden=false;
+}
+function reminderBanner(){
+  const due=allAppts(null).filter(({a})=>{if(a.done)return false;const m=minsUntil(a.when);const w=Math.max(REMIND[a.remind]||0,0);return m!=null&&m>=0&&(m<=w||daysUntil(a.when)<=1)&&a.remind!=="No reminder"});
+  if(!due.length)return"";
+  return `<div class="remind">${due.map(({a,pt})=>{const n=daysUntil(a.when);return `<button class="remrow" data-act="cal-go" data-d="${a.when.slice(0,10)}"><span class="bellc">${I.bell}</span><span style="min-width:0;flex:1;text-align:left"><b>${n===0?"Today":n===1?"Tomorrow":WDL[parseD(a.when).getDay()]} ${fmtTime(a.when)}</b> · ${esc(apptName(a,pt))}${a.where?`<br><small>${esc(a.where)}</small>`:""}</span></button>`}).join("")}</div>`;
+}
+
+/* ---------- toast ---------- */
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2600)}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  if(e.target.id==="sheet"){closeSheet();return}
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const a=b.dataset.act,id=b.dataset.id,p=cur();
+  switch(a){
+    case "settings":closeSheet();if(prefs.tab!=="settings")prefs.lastTab=prefs.tab;prefs.tab="settings";savePrefs();render();window.scrollTo(0,0);break;
+    case "go-health":prefs.tab="health";savePrefs();render();window.scrollTo(0,0);break;
+    case "vax-remind":{const v=findIn("vaccines",id);if(v)remindSheet({id:"vx-"+v.id,type:"Vaccine",title:v.name+" due",when:v.due+"T09:00",where:p.vetName||"",remind:"1 week before"},p,false);break}
+    case "plan-check":{const it=planItems(p).find(x=>x.pid===b.dataset.pid);if(!it)break;
+      if(it.done){update(c=>{c.vaccines=c.vaccines.filter(v=>v.id!==it.rec.id)});toast("Unchecked "+it.label)}
+      else{const est=it.st==="missed";const date=est?it.target:todayISO();const v={id:uid(),name:VAX_NAMES[it.key],date,vet:"",plan:it.pid,notes:est?"Date estimated from the usual schedule. Edit if you know the exact date.":""};v.due=suggestDue(p,v);
+        update(c=>{c.vaccines=c.vaccines||[];c.vaccines.push(v)});toast("✓ "+it.label+(est?" · dated "+fmtShort(date)+" (estimated)":" · given today")+(v.due?" · next due "+fmtD(v.due):""))}
+      break}
+    case "plan-remind":{const it=planItems(p).find(x=>x.pid===b.dataset.pid);if(it)remindSheet({id:"plan-"+p.id+"-"+it.i,type:"Vaccine",title:it.label+" due",when:it.target+"T09:00",where:p.vetName||"",remind:"1 week before"},p,false);break}
+    case "q-done":{const q=findIn("questions",id);if(q)qForm(q,true);break}
+    case "q-edit":{const q=findIn("questions",id);if(q)qForm(q,false);break}
+    case "cdc-done":openForm({title:"CDC Dog Import Form",fields:[{k:"cdcForm",label:"Date you submitted it",type:"date",def:todayISO(),req:true}],values:{cdcForm:p.cdcForm},onSave(v){update(c=>{c.cdcForm=v.cdcForm});toast("Saved · good until "+fmtD(addMonths(v.cdcForm,6)))}});break;
+    case "tab":prefs.tab=b.dataset.tab;savePrefs();render();window.scrollTo(0,0);break;
+    case "pick":prefs.cur=id;savePrefs();render();break;
+    case "pet-new":petForm(null);break;
+    case "pet-edit":petForm(p);break;
+    case "sample":{const s=samplePet();prefs.cur=s.id;prefs.tab="home";savePrefs();persistPet(s);break}
+    case "unit":prefs.unit=b.dataset.u;savePrefs();render();break;
+    case "w-new":listForm("weights",null,"Log weight",W_FIELDS(),{unitField:"lb"});break;
+    case "w-edit":{const w=findIn("weights",id);openWeightEdit(w);break}
+    case "vax-new":vaxForm(null);break;
+    case "vax-plan":vaxForm(null,b.dataset.name);break;
+    case "vax-edit":vaxForm(findIn("vaccines",id));break;
+    case "med-new":listForm("meds",null,"Add medication",MED_FIELDS);break;
+    case "med-edit":listForm("meds",findIn("meds",id),"Edit medication",MED_FIELDS);break;
+    case "med-give":update(c=>{const m=c.meds.find(x=>x.id===id);if(m)m.last=todayISO()});toast("Marked as given today");break;
+    case "visit-new":listForm("visits",null,"Add vet visit",VISIT_FIELDS);break;
+    case "visit-edit":listForm("visits",findIn("visits",id),"Edit vet visit",VISIT_FIELDS);break;
+    case "appt-new":apptForm(null,b.dataset.d||null);break;
+    case "appt-edit":{const f=findAppt(id);if(f)apptForm(f);break}
+    case "appt-log":{const f=findAppt(id);if(f)logForm(f);break}
+    case "appt-remind":{const f=findAppt(id);if(f)remindSheet(f.a,f.pt,false);break}
+    case "ics":{const f=S.remEv;if(f){saveICS(f.a,f.pt);closeSheet();toast("Calendar file ready. Tap Add to save it.")}break}
+    case "cal-day":S.calDay=b.dataset.d;{const d=parseD(S.calDay);if(d.getMonth()!==S.calM){S.calY=d.getFullYear();S.calM=d.getMonth()}}render();break;
+    case "cal-nav":{calState();const d=new Date(S.calY,S.calM+Number(b.dataset.n),1);S.calY=d.getFullYear();S.calM=d.getMonth();S.calDay=iso(d);render();break}
+    case "cal-today":S.calY=null;calState();render();break;
+    case "cal-scope":S.calScope=b.dataset.s;render();break;
+    case "cal-go":{calState();S.calDay=b.dataset.d;const d=parseD(S.calDay);S.calY=d.getFullYear();S.calM=d.getMonth();prefs.tab="cal";savePrefs();render();window.scrollTo(0,0);break}
+    case "copy":{const v=b.dataset.v;try{navigator.clipboard.writeText(v).then(()=>toast("Copied"),()=>toast(v))}catch(err){toast(v)}break}
+    case "close":closeSheet();break;
+    case "backup":exportBackup();break;
+    case "restore":$("#restoreFile").value="";$("#restoreFile").click();break;
+    case "hide-install":prefs.hideInstall=true;savePrefs();render();break;
+    case "del-ask":$("#confirmBox").innerHTML=`<div class="confirm"><div>${esc(formCtx.delLabel||"Delete this?")}</div><div style="display:flex;gap:10px"><button type="button" class="btn small" style="background:var(--bad);color:var(--surface)" data-act="del-yes">Yes, delete</button><button type="button" class="btn ghost small" data-act="del-no">Keep</button></div></div>`;break;
+    case "del-no":$("#confirmBox").innerHTML="";break;
+    case "del-yes":{const fn=formCtx.onDelete;closeSheet();fn&&fn();break}
+  }
+});
+function openWeightEdit(w){
+  listForm("weights",null,"Edit weigh-in",W_FIELDS(),{unitField:"lb",values:weightItemForForm(w),
+    onSave(v){update(c=>{const i=c.weights.findIndex(x=>x.id===w.id);c.weights[i]=Object.assign({},w,v)});toast("Saved")},
+    onDelete(){update(c=>{c.weights=c.weights.filter(x=>x.id!==w.id)});toast("Deleted")}});
+}
+document.addEventListener("submit",e=>{if(e.target.id!=="qform")return;e.preventDefault();const t=$("#q_text").value.trim();if(!t){$("#q_text").focus();return}
+  update(c=>{c.questions=c.questions||[];c.questions.push({id:uid(),text:t,date:todayISO(),status:"open"})});toast("Added to your vet list");setTimeout(()=>{const i=$("#q_text");i&&i.focus()},50)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden)closeSheet()});
+
+$("#breeds").innerHTML=CKC.map(b=>`<option value="${esc(b.n)}">`).join("")+'<option value="Mixed breed">';
+$("#restoreFile").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(f)importBackup(f)});
+render();
+initStore();
+if(prefs.seenVersion!==APP_VERSION){if(S.pets.length&&prefs.seenVersion!==undefined||S.pets.length&&!prefs.seenVersion)showWhatsNew();prefs.seenVersion=APP_VERSION;savePrefs()}
+if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
