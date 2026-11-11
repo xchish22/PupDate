@@ -1,5 +1,5 @@
 // Pupdate offline support: keeps the app working with no internet.
-const CACHE = "pupdate-1.3.0";
+const CACHE = "pupdate-1.4.0";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

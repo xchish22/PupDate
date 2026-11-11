@@ -2,6 +2,26 @@
 
 All notable changes to Pupdate. Numbers follow MAJOR.MINOR.PATCH (see VERSIONING.md).
 
+## 1.4.0 — 2026-11-11
+### Added
+- **Vet summary** (Profile → Vet summary): one page with details, microchip, vaccines, medications, weights, recent vet visits, health notes, open questions and documents on file. Share it as a file (Messages, Mail, AirDrop) or print / save as PDF.
+- **Documents**: photos or PDFs of the rabies certificate, CDC import receipt, vaccine records, invoices, insurance, CKC papers and lab results, stored on the phone. The border checklist links straight to them ("Show it").
+- **Care routine**: nail trims, teeth, baths, ear cleaning and more, each repeating every few days with a Done button. Due items appear in Needs attention, and the bell adds a repeating reminder to your phone's calendar.
+- **Health notes**: "Something's off" lets you tick what you noticed (vomiting, low energy, limping…), add details, and add it to your vet questions in one step.
+- **Training**: 12 common commands plus your own, each tapped from Not started → Learning → Solid.
+- **Socialization checklist**: 27 experiences (people, animals, places, sounds, handling, surfaces) with progress, and a reminder about the puppy window.
+- **Milestones**: a photo timeline of the firsts, showing how old your pup was.
+- **Expenses**: food, treats and toys, medication, insurance, supplies, gear, licence and training. Costs now combine appointments and expenses, by category and by pet.
+- **Send to family**: send a pet (with photos and documents) to another phone. Importing combines records from both phones instead of overwriting.
+
+### Changed
+- Backups now include document photos and milestone photos.
+- Restoring a pet that already exists combines the records rather than replacing them.
+
+### Fixed
+- Semicolons in calendar reminders weren't escaped, which could cut off the text.
+- "1 days overdue" now reads "1 day overdue".
+
 ## 1.3.0 — 2026-11-10
 ### Added
 - **Looping video** of your pet. In Add/Edit pet, choose a video from your Photos, and a slider picks which 3 seconds to use. It plays silently on a loop in the round picture on Home and Profile.

@@ -192,9 +192,48 @@ details summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:14p
 .clip-row{display:flex;align-items:center;gap:12px}
 #clip_prev{width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--surface2);flex:none}
 .clip-pick input[type=range]{width:100%;accent-color:var(--accent)}
+.flabel{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.schips{display:flex;flex-wrap:wrap;gap:8px}
+.schip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;position:relative}
+.schip input{position:absolute;opacity:0;pointer-events:none}
+.schip.on{background:var(--mint);border-color:var(--accent);color:var(--accent)}
+.checkrow{display:flex;gap:10px;align-items:center;font-weight:600}.checkrow input{width:20px;height:20px;accent-color:var(--accent)}
+.sgroup{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.bar.big{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden}.bar.big i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.tstate{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--muted);min-width:96px}
+.tstate.learning{background:var(--peach);border-color:transparent;color:var(--warn)}.tstate.solid{background:var(--mint);border-color:transparent;color:var(--good)}
+.presets{display:flex;flex-wrap:wrap;gap:8px;padding-top:10px}
+.chipbtn{border:1px dashed var(--line);background:none;color:var(--accent);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tag2{background:var(--peach);color:var(--ink);border-radius:999px;padding:2px 9px;font-size:13px;font-weight:600}
+.docgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.doc{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:6px;display:flex;flex-direction:column;gap:4px;text-align:left;min-width:0;color:var(--ink)}
+.doc img,.doc .pdf{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-weight:800;color:var(--accent)}
+.doc .dt{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.doc .dd{font-size:12px;color:var(--muted)}
+.docpick{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.docthumb{width:64px;height:64px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;font-weight:800;color:var(--accent);overflow:hidden;flex:none}.docthumb img{width:100%;height:100%;object-fit:cover}
+.docview{max-height:60vh;overflow:auto;border-radius:12px;background:var(--surface2)}.docview img{display:block;width:100%}
+.timeline{display:flex;flex-direction:column;gap:10px}
+.moment{display:flex;gap:12px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:10px;text-align:left;color:var(--ink)}
+.moment img{width:72px;height:72px;border-radius:12px;object-fit:cover;flex:none;background:var(--surface2)}
+.moment .mdot{width:14px;height:14px;border-radius:50%;background:var(--gold);flex:none;margin:0 6px}
+.mbody{display:flex;flex-direction:column;gap:2px;min-width:0}.mt{font-weight:800}.ms{font-size:13px;color:var(--muted)}.mn{font-size:14px}
+.sumcard{background:#fff;color:#1d2a30;overflow-x:auto}
+@media print{body::before,.top,.tabs,.noprint,#toast{display:none!important}main{padding:0!important}.sumcard{border:0!important;box-shadow:none!important;padding:0!important}body{background:#fff!important}}
+.field label.schip{text-transform:none;letter-spacing:normal;font-size:14px;font-weight:600;color:var(--ink)}
+.field label.schip.on{color:var(--accent)}
+.field label.btn{text-transform:none;letter-spacing:.02em;font-size:13px;font-weight:600;color:var(--accent)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;max-width:calc(100% - 32px)}
 .loading{padding:40px 0;color:var(--muted);font:600 20px var(--display)}
 @media (prefers-reduced-motion:no-preference){.panel{animation:up .22s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+
+/* summary */
+.sum{font:15px/1.45 -apple-system,system-ui,"Helvetica Neue",Arial,sans-serif;color:#1d2a30;max-width:760px}
+.sum h1{margin:2px 0 4px;font-size:30px}.sum h2{font-size:17px;margin:22px 0 8px;padding-bottom:4px;border-bottom:2px solid #cfe3dc;color:#2b6c63}
+.sumhead{display:flex;gap:16px;align-items:center}.sumhead img{width:84px;height:84px;border-radius:50%;object-fit:cover}
+.sumkicker{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5d6f77}
+.sum table{border-collapse:collapse;width:100%}.sum th,.sum td{text-align:left;padding:6px 8px;vertical-align:top;border-bottom:1px solid #e3ebe8}
+.sum table:not(.grid) th{width:34%;color:#5d6f77;font-weight:600}.sum .grid th{background:#eef5f2;font-size:13px}
+.sum ul{margin:0;padding-left:20px}.sumfoot{margin-top:24px;font-size:12px;color:#7a8a91}
 </style>
 </head>
 <body>
@@ -206,7 +245,7 @@ details summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:14p
 <nav class="tabs" id="tabs" hidden><div class="wrap" id="tabbtns"></div></nav>
 <div class="sheet" id="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 <div id="toast" hidden></div>
-<datalist id="breeds"></datalist><datalist id="vaxnames"><option value="DA2PP"><option value="Rabies"><option value="Leptospirosis"><option value="Lyme"><option value="Bordetella"><option value="Canine influenza"></datalist>
+<datalist id="breeds"></datalist><datalist id="momentnames"><option value="First day home"><option value="First bath"><option value="First vet visit"><option value="First walk"><option value="First swim"><option value="Lost first tooth"><option value="Learned sit"><option value="Birthday"><option value="Gotcha day"><option value="First haircut"><option value="First snow"><option value="Spay / neuter"></datalist><datalist id="vaxnames"><option value="DA2PP"><option value="Rabies"><option value="Leptospirosis"><option value="Lyme"><option value="Bordetella"><option value="Canine influenza"></datalist>
 <input type="file" id="restoreFile" accept="application/json,.json" hidden>
 
 <script>
@@ -261,11 +300,13 @@ function initStore(){
 }
 function saveAll(){if(!lsSet(LOCAL,S.pets))toast("This phone is out of space for Pupdate. Try smaller photos.")}
 function persistPet(p){
+  p.updatedAt=Date.now();
   const i=S.pets.findIndex(x=>x.id===p.id);
   if(i<0)S.pets.push(p);else S.pets[i]=p;
   saveAll();render();
 }
 function removePet(id){
+  const gone=S.pets.find(p=>p.id===id);if(gone){(gone.docs||[]).forEach(d=>{mediaDel("docs",d.id).catch(()=>{});Media.drop("docs",d.id)});(gone.moments||[]).forEach(m=>{if(m.photo){mediaDel("photos",m.id).catch(()=>{});Media.drop("photos",m.id)}})}
   S.pets=S.pets.filter(p=>p.id!==id);saveAll();try{clipDel(id).catch(()=>{});Clips.drop(id)}catch(e){}
   if(prefs.cur===id){prefs.cur=S.pets[0]?S.pets[0].id:null;savePrefs()}
   render();
@@ -275,6 +316,7 @@ function removePet(id){
 async function exportBackup(){
   const data={app:"pupdate",version:DATA_VERSION,appVersion:APP_VERSION,exportedAt:new Date().toISOString(),pets:S.pets};
   const clips=await clipsForBackup();if(Object.keys(clips).length)data.clips=clips;
+  data.media=await mediaForPets(S.pets);
   const name="pupdate-backup-"+todayISO()+".json";
   const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
   let done=false;
@@ -290,10 +332,10 @@ function importBackup(file){
     const pets=d&&(d.app==="pupdate"||d.app==="pawlette")&&Array.isArray(d.pets)?d.pets:null;
     if(!pets){toast("That file isn't a Pupdate backup.");return}
     if((d.version||1)>DATA_VERSION){toast("This backup is from a newer Pupdate ("+(d.appVersion||"?")+"). Update the app first.");return}
-    let n=0;pets.forEach(p=>{if(!p||!p.id||!p.name)return;const i=S.pets.findIndex(x=>x.id===p.id);if(i<0)S.pets.push(p);else S.pets[i]=p;n++});
-    await restoreClips(d.clips);
+    let n=0,merged=[];pets.forEach(p=>{if(!p||!p.id||!p.name)return;const i=S.pets.findIndex(x=>x.id===p.id);if(i<0)S.pets.push(p);else{const m=mergePet(S.pets[i],p);S.pets[i]=m.pet;merged.push(p.name+(m.added?" (+"+m.added+" new)":""))}n++});
+    await restoreClips(d.clips);await restoreMedia(d.media);
     saveAll();if(!prefs.cur&&S.pets[0]){prefs.cur=S.pets[0].id;savePrefs()}
-    toast("Restored "+n+(n===1?" pet":" pets"));render()};
+    toast(merged.length?"Updated "+merged.join(", "):"Added "+n+(n===1?" pet":" pets"));render()};
   r.onerror=()=>toast("That file couldn't be read.");
   r.readAsText(file);
 }
@@ -332,12 +374,14 @@ const sortBy=(a,k,dir=1)=>a.slice().sort((x,y)=>(x[k]||"")<(y[k]||"")?-dir:(x[k]
 function dueStatus(days){if(days==null)return null;if(days<0)return["bad",Math.abs(days)+"d overdue"];if(days===0)return["warn","Due today"];if(days<=14)return["warn","Due in "+days+"d"];return["good","Due "+""];}
 function medNext(m){return m.last&&m.every?addDays(m.last,m.every):null}
 
+const overdueText=d=>Math.abs(d)+(Math.abs(d)===1?" day":" days")+" overdue";
 function attention(p){
   const out=[];
-  (p.vaccines||[]).filter(v=>!superseded(p,v)).forEach(v=>{const d=daysUntil(v.due);if(d!=null&&d<=14)out.push({d,t:v.name+" booster",s:d<0?Math.abs(d)+" days overdue":d===0?"Due today":"Due "+fmtShort(v.due),lvl:d<0?"bad":"warn",act:"vax-edit",id:v.id})});
-  (p.meds||[]).forEach(m=>{const n=medNext(m);const d=daysUntil(n);if(d!=null&&d<=3)out.push({d,t:m.name,s:d<0?Math.abs(d)+" days overdue":d===0?"Due today":"Due "+fmtShort(n),lvl:d<0?"bad":"warn",act:"med-give",id:m.id,btn:"Given"})});
+  (p.vaccines||[]).filter(v=>!superseded(p,v)).forEach(v=>{const d=daysUntil(v.due);if(d!=null&&d<=14)out.push({d,t:v.name+" booster",s:d<0?overdueText(d):d===0?"Due today":"Due "+fmtShort(v.due),lvl:d<0?"bad":"warn",act:"vax-edit",id:v.id})});
+  (p.meds||[]).forEach(m=>{const n=medNext(m);const d=daysUntil(n);if(d!=null&&d<=3)out.push({d,t:m.name,s:d<0?overdueText(d):d===0?"Due today":"Due "+fmtShort(n),lvl:d<0?"bad":"warn",act:"med-give",id:m.id,btn:"Given"})});
   planItems(p).filter(s=>s.core&&s.st==="due"&&!(p.vaccines||[]).some(v=>vKey(v.name)===s.key&&v.due&&!superseded(p,v))).forEach(s=>out.push({d:s.d,t:s.label,s:s.d<0?"Due now (typical timing)":"Due around "+fmtShort(s.target),lvl:"warn",act:"go-health",id:""}));
   {const q=openQs(p).length;const nv=(p.appts||[]).filter(a=>!a.done&&a.type==="Vet"&&daysUntil(a.when)>=0&&daysUntil(a.when)<=14).sort((x,y)=>x.when<y.when?-1:1)[0];if(q&&nv)out.push({d:daysUntil(nv.when)-.5,t:q+(q===1?" question":" questions")+" for the vet",s:"Bring them to "+(nv.title||"the vet")+" on "+fmtShort(nv.when),lvl:"mute",act:"go-health",id:""})}
+  (p.tasks||[]).forEach(t=>{const n=taskNext(t);const d=daysUntil(n);if(d!=null&&d<=1)out.push({d,t:t.name,s:d<0?overdueText(d):d===0?"Due today":"Due tomorrow",lvl:d<0?"bad":"warn",act:"task-done",id:t.id,btn:"Done"})});
   (p.appts||[]).filter(a=>!a.done).forEach(a=>{const d=daysUntil(a.when);if(d!=null&&d>=0&&d<=7)out.push({d,t:a.title||a.type,s:(d===0?"Today":d===1?"Tomorrow":fmtShort(a.when))+(fmtTime(a.when)?" · "+fmtTime(a.when):""),lvl:"mute",act:"appt-edit",id:a.id})});
   return out.sort((a,b)=>a.d-b.d);
 }
@@ -355,9 +399,11 @@ function render(){
   $("#tabbtns").innerHTML=TABS.map(([k,l])=>`<button class="${prefs.tab===k?"on":""}" data-act="tab" data-tab="${k}" aria-label="${l}">${I[k]}<span>${l}</span></button>`).join("");
   const note=S.note?`<div class="note">${esc(S.note)}</div>`:"";
   if(prefs.tab==="settings"){v.innerHTML=note+viewSettings();$("#tabs").hidden=!p;return}
+  if(prefs.tab==="summary"&&p){v.innerHTML=viewSummary(p);hydrateMedia(v);return}
   if(!p){v.innerHTML=note+welcome();return}
   const views={home:viewHome,growth:viewGrowth,health:viewHealth,cal:viewCal,profile:viewProfile};
   v.innerHTML=note+(views[prefs.tab]||viewHome)(p);
+  hydrateMedia(v);
 }
 const avatar=(p)=>p.photo?`<img class="av" src="${p.photo}" alt="">`:`<span class="av">${esc((p.name||"?")[0].toUpperCase())}</span>`;
 
@@ -398,7 +444,7 @@ function viewHome(p){
   <section class="sec"><div class="sechead"><h3>Growth</h3><button class="link" data-act="w-new">+ Log weight</button></div>
    <div class="card">${all.length>1?chart(all,true):`<div class="empty">${all.length?"Log one more weight to see the curve.":"Log a weight to start the growth chart."}</div>`}</div></section>
   <section class="sec"><div class="sechead"><h3>Quick add</h3></div>
-   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" data-act="vax-new">+ Vaccine</button><button class="btn ghost small" data-act="med-new">+ Medication</button><button class="btn ghost small" data-act="visit-new">+ Vet visit</button><button class="btn ghost small" data-act="appt-new">+ Appointment</button></div></section>`;
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" data-act="vax-new">+ Vaccine</button><button class="btn ghost small" data-act="med-new">+ Medication</button><button class="btn ghost small" data-act="visit-new">+ Vet visit</button><button class="btn ghost small" data-act="appt-new">+ Appointment</button><button class="btn ghost small" data-act="check-new">+ Health note</button><button class="btn ghost small" data-act="exp-new">+ Expense</button><button class="btn ghost small" data-act="moment-new">+ Milestone</button><button class="btn ghost small" data-act="doc-new">+ Document</button></div></section>`;
 }
 
 function chart(ws,compact){
@@ -424,7 +470,9 @@ function viewGrowth(p){
   return `<div class="sechead"><h3 style="font:800 30px/1.1 var(--display);margin:0">${esc(p.name)}'s growth</h3></div>
   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="seg" role="group" aria-label="Units"><button class="${prefs.unit==="lb"?"on":""}" data-act="unit" data-u="lb">lb</button><button class="${prefs.unit==="kg"?"on":""}" data-act="unit" data-u="kg">kg</button></div><button class="btn" data-act="w-new">+ Log weight</button></div>
   <div class="card">${ws.filter(w=>w.lb!=="").length>1?chart(ws.filter(w=>w.lb!==""),false):`<div class="empty">Log at least two weights to see the growth curve. Weekly weigh-ins work well for puppies.</div>`}</div>
-  <section class="sec"><div class="sechead"><h3>Weigh-ins</h3><span class="eyebrow">${ws.length} logged</span></div><div class="card list">${rows||'<div class="empty">No weigh-ins yet.</div>'}</div></section>`;
+  <section class="sec"><div class="sechead"><h3>Weigh-ins</h3><span class="eyebrow">${ws.length} logged</span></div><div class="card list">${rows||'<div class="empty">No weigh-ins yet.</div>'}</div></section>
+  ${trainingSection(p)}
+  ${momentsSection(p)}`;
 }
 function ageAt(b,d){const B=parseD(b),D=parseD(d);if(!B||!D||D<B)return fmtD(d);const days=Math.floor((D-B)/DAY);const wk=Math.floor(days/7);return fmtD(d)+" · "+(wk<26?wk+" wks":Math.floor(days/30.44)+" mo")}
 
@@ -434,21 +482,25 @@ function viewHealth(p){
   const visits=sortBy(p.visits||[],"date",-1);
   return `<div class="sechead"><h3 style="font:800 30px/1.1 var(--display);margin:0">Health</h3></div>
   ${questionsSection(p)}
+  ${checksSection(p)}
   ${planSection(p)}
   <section class="sec"><div class="sechead"><h3>Vaccines</h3><button class="link" data-act="vax-new">+ Add</button></div><div class="card list">${vax.length?vax.map(v=>{const d=superseded(p,v)?null:daysUntil(v.due);const st=d==null?null:d<0?["bad","Overdue"]:d<=30?["warn","Due "+fmtShort(v.due)]:["good","Next "+fmtShort(v.due)];
     return `<div class="row"><div class="main"><div class="t">${esc(v.name)}</div><div class="s">Given ${fmtD(v.date)}${v.vet?" · "+esc(v.vet):""}</div></div>${st?`<span class="pill ${st[0]}">${st[1]}</span>`:""}${v.due&&d!=null&&d>=0?`<button class="icon-btn" data-act="vax-remind" data-id="${v.id}" aria-label="Add reminder">${I.bell}</button>`:""}<button class="icon-btn" data-act="vax-edit" data-id="${v.id}" aria-label="Edit">${I.edit}</button></div>`}).join(""):'<div class="empty">No vaccines logged yet.</div>'}</div></section>
   <section class="sec"><div class="sechead"><h3>Medications &amp; preventives</h3><button class="link" data-act="med-new">+ Add</button></div><div class="card list">${meds.length?meds.map(m=>{const n=medNext(m);const d=daysUntil(n);const st=d==null?["mute","Not started"]:d<0?["bad",Math.abs(d)+"d late"]:d===0?["warn","Today"]:d<=3?["warn","In "+d+"d"]:["good",fmtShort(n)];
     return `<div class="row"><div class="main"><div class="t">${esc(m.name)}${m.dose?` <span class="s">· ${esc(m.dose)}</span>`:""}</div><div class="s">${m.every?"Every "+m.every+" days":"As needed"}${m.last?" · last "+fmtShort(m.last):""}</div></div><span class="pill ${st[0]}">${st[1]}</span><button class="btn small ghost" data-act="med-give" data-id="${m.id}">Given</button><button class="icon-btn" data-act="med-edit" data-id="${m.id}" aria-label="Edit">${I.edit}</button></div>`}).join(""):'<div class="empty">Track flea &amp; tick, heartworm, dewormer or any daily meds.</div>'}</div>${isDog(p)?'<p class="note" style="margin:0">In most of Canada, heartworm prevention runs about June to November, and tick prevention whenever it\'s above 4 °C (often spring through fall). Ask your vet what fits your area.</p>':""}</section>
+  ${tasksSection(p)}
   <section class="sec"><div class="sechead"><h3>Vet visits &amp; records</h3><button class="link" data-act="visit-new">+ Add</button></div><div class="card list">${visits.length?visits.map(x=>`<div class="row"><div class="date"><b>${parseD(x.date).getDate()}</b><small>${MON[parseD(x.date).getMonth()]}</small></div><div class="main"><div class="t">${esc(x.reason||"Visit")}</div><div class="s">${[x.clinic,x.notes].filter(Boolean).map(esc).join(" · ")||fmtD(x.date)}</div></div>${x.cost?`<span class="pill mute">$${esc(x.cost)}</span>`:""}<button class="icon-btn" data-act="visit-edit" data-id="${x.id}" aria-label="Edit">${I.edit}</button></div>`).join(""):'<div class="empty">Log checkups, sick visits, spay/neuter and test results.</div>'}</div></section>
   ${p.allergies?`<section class="sec"><div class="sechead"><h3>Allergies &amp; conditions</h3></div><div class="card">${esc(p.allergies)}</div></section>`:""}`;
 }
 
 function viewProfile(p){
   const kv=[["Species",p.species],["Breed",p.breed],["CKC group",isDog(p)?ckcGroup(p.breed):""],["Sex",p.sex],["Birthday",p.birthday?fmtD(p.birthday)+" · "+ageText(p.birthday):""],["Color / markings",p.color],["Microchip #",p.microchip],["Food",p.food],["Vet",p.vetName],["Vet phone",p.vetPhone],["Insurance",p.insurance],["Allergies",p.allergies],["Notes",p.notes]];
-  return hero(p)+`<section class="sec"><div class="sechead"><h3>Details</h3><button class="link" data-act="pet-edit">Edit</button></div>
+  return hero(p)+`<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="summary">Vet summary</button><button class="btn ghost" data-act="send-pet" data-id="${p.id}">Send to family</button></div>
+  <section class="sec"><div class="sechead"><h3>Details</h3><button class="link" data-act="pet-edit">Edit</button></div>
   <div class="card"><dl class="kv">${kv.filter(([k,v])=>k!=="CKC group"||v).map(([k,v])=>`<dt>${k}</dt><dd>${v?esc(v):'<span class="s" style="color:var(--muted)">—</span>'}</dd>`).join("")}</dl></div></section>
   ${p.vetPhone?`<section class="sec"><div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div style="min-width:0"><div class="eyebrow">Call the vet</div><div style="font:800 22px var(--display);user-select:all">${esc(p.vetPhone)}</div></div><button class="btn small ghost" data-act="copy" data-v="${esc(p.vetPhone)}">Copy</button></div></section>`:""}
   ${p.microchip?`<section class="sec"><div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div style="min-width:0"><div class="eyebrow">Microchip</div><div style="font:600 18px var(--body);font-variant-numeric:tabular-nums;user-select:all;overflow-wrap:anywhere">${esc(p.microchip)}</div></div><button class="btn small ghost" data-act="copy" data-v="${esc(p.microchip)}">Copy</button></div></section>`:""}
+  ${docsSection(p)}
   ${borderSection(p)}`;
 }
 
@@ -462,6 +514,10 @@ function openForm(o){
     let inp;
     if(fd.type==="select")inp=`<select id="${id}" name="${fd.k}">${fd.options.map(op=>{const v=typeof op==="object"?op.v:op,l=typeof op==="object"?op.l:op;return `<option value="${esc(v)}"${v===val?" selected":""}>${esc(l)}</option>`}).join("")}</select>`;
     else if(fd.type==="textarea")inp=`<textarea id="${id}" name="${fd.k}" placeholder="${esc(fd.ph||"")}">${esc(val)}</textarea>`;
+    else if(fd.type==="chips"){const sel=Array.isArray(val)?val:[];return `<div class="field"><span class="flabel">${esc(fd.label)}</span><div class="schips">${fd.options.map(op=>`<label class="schip${sel.includes(op)?" on":""}"><input type="checkbox" name="${fd.k}" value="${esc(op)}"${sel.includes(op)?" checked":""} onchange="this.parentNode.classList.toggle('on',this.checked)">${esc(op)}</label>`).join("")}</div></div>`}
+    else if(fd.type==="check")return `<label class="checkrow"><input type="checkbox" id="${id}" name="${fd.k}" value="1"${val?" checked":""}> ${esc(fd.label)}</label>`;
+    else if(fd.type==="docfile")return `<div class="field"><span class="flabel">${esc(fd.label)}</span><div class="docpick"><span id="doc_prev" class="docthumb">+</span><label class="btn ghost small" for="doc_file" style="cursor:pointer">Take photo or choose file</label><input id="doc_file" type="file" accept="image/*,application/pdf" hidden></div></div>`;
+    else if(fd.type==="momentpic"){const has=o.values.photo;return `<div class="field"><span class="flabel">${esc(fd.label)}</span><div class="docpick"><span id="pic_prev" class="docthumb">${has?`<img data-media="photos/${o.values.id}" alt="">`:"+"}</span><label class="btn ghost small" for="pic_file" style="cursor:pointer">${has?"Change photo":"Add photo"}</label>${has?'<button type="button" class="btn danger small" data-act="pic-remove">Remove</button>':""}<input id="pic_file" type="file" accept="image/*" hidden></div></div>`}
     else if(fd.type==="photo")return `<div class="photo-pick"><span id="ph_prev">${val?`<img class="av" src="${val}" alt="">`:`<span class="av">+</span>`}</span><input type="hidden" id="${id}" name="${fd.k}" value="${esc(val)}"><label class="btn ghost small" for="ph_file" style="cursor:pointer">Choose photo</label><input id="ph_file" type="file" accept="image/*" hidden></div>${fd.clip?clipPickHTML():""}`;
     else inp=`<input id="${id}" name="${fd.k}" type="${fd.type||"text"}" value="${esc(val)}" placeholder="${esc(fd.ph||"")}"${fd.type==="number"?' step="any" inputmode="decimal"':""}${fd.req?" required":""}${fd.list?` list="${fd.list}" autocomplete="off"`:""}>`;
     return `<div class="field${fd.half?" half":""}"><label for="${id}">${esc(fd.label)}</label>${inp}</div>`;
@@ -473,7 +529,12 @@ function openForm(o){
   const first=$("#panel").querySelector("input:not([type=hidden]),select,textarea");if(first&&!o.values.id)setTimeout(()=>first.focus({preventScroll:true}),50);
   const fi=$("#ph_file");if(fi)fi.addEventListener("change",onPhoto);
   if($("#clipPick"))renderClipPick();
+  hydrateMedia($("#panel"));
+  const dfi=$("#doc_file");if(dfi)dfi.addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;o.docFile=f;const pv=$("#doc_prev");if(/^image\//.test(f.type)){pv.innerHTML=`<img src="${URL.createObjectURL(f)}" alt="">`}else pv.textContent="PDF"});
+  const pfi=$("#pic_file");if(pfi)pfi.addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;o.picFile=f;o.picRemove=false;$("#pic_prev").innerHTML=`<img src="${URL.createObjectURL(f)}" alt="">`});
   $("#frm").addEventListener("submit",e=>{e.preventDefault();const vals={};new FormData(e.target).forEach((v,k)=>vals[k]=typeof v==="string"?v.trim():v);
+    o.fields.forEach(fd=>{if(fd.type==="chips")vals[fd.k]=new FormData(e.target).getAll(fd.k);if(fd.type==="check")vals[fd.k]=!!vals[fd.k]});
+    if(o.fields.some(fd=>fd.type==="docfile")&&!o.docFile){toast("Choose a photo or PDF first.");return}
     const miss=o.fields.find(fd=>fd.req&&!vals[fd.k]);if(miss){toast(miss.label+" is required.");const el=$("#f_"+miss.k);el&&el.focus();return}
     o.fields.forEach(fd=>{if(fd.type==="number"&&vals[fd.k]!=="")vals[fd.k]=Number(vals[fd.k])});
     if(o.unitField&&prefs.unit==="kg"&&vals[o.unitField]!=="")vals[o.unitField]=+(vals[o.unitField]/KG).toFixed(2);
@@ -527,6 +588,12 @@ function samplePet(){
   const b=addDays(todayISO(),-15*7);const d=n=>addDays(b,n*7);
   const ws=[[8,7.4],[9,8.6],[10,10.1],[11,11.5],[12,13.2],[13,14.6],[14,16.3],[15,17.8]].map(([wk,lb])=>({id:uid(),date:d(wk),lb,height:"",note:""}));
   return {id:uid(),createdAt:Date.now(),name:"Biscuit (example)",species:"Dog",breed:"Retriever (Golden)",sex:"Female",birthday:b,color:"Cream",microchip:"985112009876543",vetName:"Example Animal Hospital",vetPhone:"(555) 010-0199",food:"Puppy kibble, 1 cup 3× a day",allergies:"",notes:"Example pet — delete it from Profile → Edit when you're done exploring.",insurance:"",
+    tasks:[{id:uid(),name:"Nail trim",every:14,last:addDays(todayISO(),-15)},{id:uid(),name:"Brush teeth",every:1,last:addDays(todayISO(),-1)}],
+    checks:[{id:uid(),date:addDays(todayISO(),-3),signs:["Scratching / itchy","Eyes / ears"],notes:"Left ear, mostly at night"}],
+    expenses:[{id:uid(),date:addDays(todayISO(),-6),cat:"Food",amount:68,note:"Puppy kibble, 25 lb"},{id:uid(),date:addDays(todayISO(),-2),cat:"Treats & toys",amount:24,note:"Chew toys"},{id:uid(),date:addDays(todayISO(),-1),cat:"Insurance",amount:42,note:"Monthly premium"}],
+    train:{name:{s:"solid",d:d(10)},sit:{s:"solid",d:d(13)},down:{s:"learning",d:""},come:{s:"learning",d:""}},
+    social:{kids:d(12),calmdog:d(13),car:d(9),vetvisit:d(11),vacuum:d(10),paws:d(12),grass:d(9),stairs:d(14)},
+    moments:[{id:uid(),title:"First day home",date:d(8),note:"Slept the whole drive home",photo:false},{id:uid(),title:"First vet visit",date:d(11),note:"Brave girl, no crying",photo:false}],
     weights:ws,questions:[{id:uid(),text:"She scratches her left ear a lot. Ear infection?",date:addDays(todayISO(),-3),status:"open"},{id:uid(),text:"When should we book her spay?",date:addDays(todayISO(),-6),status:"open"},{id:uid(),text:"How much should she eat at this age?",date:d(10),status:"asked",askedDate:d(11),answer:"1 cup 3 times a day until 6 months."}],
     vaccines:[{id:uid(),name:"DA2PP",date:d(7),due:d(11),vet:"Breeder"},{id:uid(),name:"DA2PP",date:d(11),due:d(16),vet:"Example Animal Hospital"},{id:uid(),name:"Bordetella",date:d(11),due:addDays(d(11),365),vet:"Example Animal Hospital"}],
     meds:[{id:uid(),name:"Heartworm preventive",dose:"1 chew",every:30,last:addDays(todayISO(),-28)},{id:uid(),name:"Flea & tick",dose:"1 chew",every:30,last:addDays(todayISO(),-12)}],
@@ -539,8 +606,9 @@ function samplePet(){
 }
 
 /* ---------- version ---------- */
-const APP_VERSION="1.3.0",DATA_VERSION=1;
+const APP_VERSION="1.4.0",DATA_VERSION=1;
 const VERSIONS=[
+ {v:"1.4.0",date:"2026-11-11",items:["Vet summary to share or print, plus photos of certificates and receipts","Care routine reminders, health notes, training, socialization and milestones","All your pet costs in one place, and send a pet to family to keep two phones in step"]},
  {v:"1.3.0",date:"2026-11-10",items:["Looping video: pick a short clip of your pup and it plays on Home and Profile","Reminders for shots that are already due now alert you the next morning"]},
  {v:"1.2.1",date:"2026-11-10",items:["New name: Pawlette is now Pupdate","Your pets, records and backups carry over unchanged"]},
  {v:"1.2.0",date:"2026-11-10",items:["Calendar: tap a day to book, track costs, and add reminders to your phone's calendar","Canadian puppy and young-dog vaccine schedule: check off each shot, and next-due dates fill in for you","Ask-the-vet list, US border checklist, Canadian Kennel Club breed list and this Settings page"]},
@@ -658,13 +726,13 @@ function borderSection(p){
   <div class="card list">
    ${ck(ageOk?"ok":"no","At least 6 months old",!p.birthday?"Add a birthday in Edit to check this.":ageOk?esc(p.name)+" is "+esc(ageText(p.birthday))+".":"Not old enough yet. "+esc(p.name)+" can cross from <b>"+fmtD(six)+"</b>.")}
    ${ck(chip?"ok":"no","Microchip",chip?"#"+esc(p.microchip)+". It must be readable by a universal scanner.":"Required. Add the microchip number in Edit, or ask your vet to implant one.")}
-   ${ck(cdcOk?"ok":"no","CDC Dog Import Form receipt",cdcOk?"Submitted "+fmtD(p.cdcForm)+". Good for trips from Canada until "+fmtD(cdcUntil)+". Show it on your phone or on paper.":"Free and online, one per dog. You can do it the day you travel. The receipt is good for 6 months of trips from Canada.",`<div class="ckacts"><a class="btn small ghost" href="${CDC_URL}" target="_blank" rel="noopener">Open CDC page</a><button class="btn small ghost" data-act="cdc-done">${cdcOk?"Update date":"I've submitted it"}</button></div>`)}
+   ${ck(cdcOk?"ok":"no","CDC Dog Import Form receipt",(cdcOk?"Submitted "+fmtD(p.cdcForm)+". Good for trips from Canada until "+fmtD(cdcUntil)+". Show it on your phone or on paper.":"Free and online, one per dog. You can do it the day you travel. The receipt is good for 6 months of trips from Canada.")+(hasDoc(p,"CDC import receipt")?` <button class="link" data-act="doc-view" data-id="${hasDoc(p,"CDC import receipt").id}">Show saved receipt</button>`:` <button class="link" data-act="doc-new" data-kind="CDC import receipt">Save a screenshot</button>`),`<div class="ckacts"><a class="btn small ghost" href="${CDC_URL}" target="_blank" rel="noopener">Open CDC page</a><button class="btn small ghost" data-act="cdc-done">${cdcOk?"Update date":"I've submitted it"}</button></div>`)}
    ${ck("info","Looks healthy at the border","US officers can refuse a dog that looks sick.")}
-   ${ck(rabOk?"ok":"info","Rabies certificate (recommended)",rabOk?"Rabies on record, valid to "+fmtD(rabUntil)+". Bring the signed certificate.":"The CDC doesn't require it for dogs from Canada, but some US states do and you need it to come home.")}
+   ${ck(rabOk?"ok":"info","Rabies certificate (recommended)",(hasDoc(p,"Rabies certificate")?`Photo on file. <button class="link" data-act="doc-view" data-id="${hasDoc(p,"Rabies certificate").id}">Show it</button> `:"")+(rabOk?"Rabies on record, valid to "+fmtD(rabUntil)+". Bring the signed certificate.":"The CDC doesn't require it for dogs from Canada, but some US states do and you need it to come home."))}
   </div></section>
   <section class="sec"><div class="sechead"><h3>Coming back to Canada</h3></div>
   <div class="card list">
-   ${ck(!over3?"info":rabOk?"ok":"no","Rabies vaccination certificate",!p.birthday?"Required for dogs over 3 months.":!over3?"Under 3 months: no rabies shot needed, but bring proof of age, such as breeder papers.":rabOk?"Required for dogs over 3 months, issued by a licensed vet. Yours is on record.":"Required for dogs over 3 months, issued by a licensed vet. Log the rabies shot under Health.")}
+   ${ck(!over3?"info":rabOk?"ok":"no","Rabies vaccination certificate",(over3&&!hasDoc(p,"Rabies certificate")?`<button class="link" data-act="doc-new" data-kind="Rabies certificate">Save a photo of the certificate</button> `:"")+!p.birthday?"Required for dogs over 3 months.":!over3?"Under 3 months: no rabies shot needed, but bring proof of age, such as breeder papers.":rabOk?"Required for dogs over 3 months, issued by a licensed vet. Yours is on record.":"Required for dogs over 3 months, issued by a licensed vet. Log the rabies shot under Health.")}
    ${ck("info","Bring original documents","Border services recommend carrying the originals, plus proof that the dog is yours.")}
    ${ck("info","Recent travel","If your dog was in a high-risk rabies country in the last 6 months, different rules apply. Check before you go.")}
   </div>
@@ -681,6 +749,7 @@ function viewSettings(){
   <section class="sec"><div class="sechead"><h3>Backup &amp; restore</h3><span class="eyebrow">${prefs.lastBackup?"Last "+fmtShort(prefs.lastBackup):"Never backed up"}</span></div>
   <div class="card" style="display:flex;flex-direction:column;gap:12px"><p style="margin:0;color:var(--muted);font-size:14px">Everything is saved privately on this phone, with no account and no cloud. Save a backup file now and then (to Files or iCloud Drive) so you can restore it on a new phone or share it with someone who helps care for your pets.</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn small" data-act="backup">Save a backup</button><button class="btn ghost small" data-act="restore">Restore from backup</button></div></div></section>
+  ${familySection()}
   ${installHint()}
   <section class="sec"><div class="sechead"><h3>About</h3></div><div class="card"><dl class="kv"><dt>Version</dt><dd><b>${APP_VERSION}</b></dd><dt>Released</dt><dd>${fmtD(VERSIONS[0].date)}</dd><dt>Version numbers</dt><dd>MAJOR.MINOR.PATCH. A new first number means a big change and you should save a backup before updating. A new middle number means new features. A new last number means fixes.</dd><dt>Breed list</dt><dd>Canadian Kennel Club, ${CKC.length} breeds</dd></dl></div></section>`;
 }
@@ -694,8 +763,9 @@ function showWhatsNew(){
 const CLIP_FPS=12,CLIP_SECS=3,CLIP_SIZE=256;
 const reduceMotion=()=>window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 let _db=null;
-function idb(){if(_db)return _db;_db=new Promise((res,rej)=>{try{const r=indexedDB.open("pupdate-media",1);r.onupgradeneeded=()=>r.result.createObjectStore("clips");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});return _db}
-async function idbDo(mode,fn){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction("clips",mode);const st=tx.objectStore("clips");const rq=fn(st);tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error)})}
+function idb(){if(_db)return _db;_db=new Promise((res,rej)=>{try{const r=indexedDB.open("pupdate-media",2);r.onupgradeneeded=()=>{["clips","docs","photos"].forEach(n=>{if(!r.result.objectStoreNames.contains(n))r.result.createObjectStore(n)})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});return _db}
+async function idbDo(mode,fn){return idbDoS("clips",mode,fn)}
+async function idbDoS(store,mode,fn){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction(store,mode);const st=tx.objectStore(store);const rq=fn(st);tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error)})}
 const clipGet=id=>idbDo("readonly",st=>st.get(id));
 const clipPut=(id,val)=>idbDo("readwrite",st=>st.put(val,id));
 const clipDel=id=>idbDo("readwrite",st=>st.delete(id));
@@ -768,6 +838,233 @@ async function clipsForBackup(){const out={};for(const p of S.pets){if(!p.clip)c
 async function restoreClips(clips){if(!clips)return;for(const id in clips){try{const c=clips[id];await clipPut(id,{fps:c.fps||CLIP_FPS,frames:c.frames.map(dataURLToBlob)});Clips.drop(id)}catch(e){}}}
 function remindWhen(date){return daysUntil(date)>=1?date:addDays(todayISO(),1)}
 
+/* ===================== 1.4.0 features ===================== */
+/* ---------- generic media store (photos & documents) ---------- */
+const mediaGet=(store,id)=>idbDoS(store,"readonly",st=>st.get(id));
+const mediaPut=(store,id,val)=>idbDoS(store,"readwrite",st=>st.put(val,id));
+const mediaDel=(store,id)=>idbDoS(store,"readwrite",st=>st.delete(id));
+const Media={urls:{},async url(store,id){const k=store+"/"+id;if(this.urls[k])return this.urls[k];const r=await mediaGet(store,id);if(!r||!r.blob)return null;this.urls[k]=URL.createObjectURL(r.blob);return this.urls[k]},
+  drop(store,id){const k=store+"/"+id;if(this.urls[k]){URL.revokeObjectURL(this.urls[k]);delete this.urls[k]}}};
+function hydrateMedia(root){(root||document).querySelectorAll("img[data-media]").forEach(async img=>{if(img.dataset.done)return;img.dataset.done="1";const [store,id]=img.dataset.media.split("/");try{const u=await Media.url(store,id);if(u)img.src=u;else img.alt="Missing"}catch(e){}})}
+function resizeImage(file,max,q){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const s=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);c.toBlob(b=>b?res(b):rej(new Error("encode")),"image/jpeg",q)};img.onerror=()=>rej(new Error("decode"));img.src=r.result};r.onerror=()=>rej(r.error);r.readAsDataURL(file)})}
+async function shareOrDownload(blob,name,title){
+  try{const f=new File([blob],name,{type:blob.type});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title});return "shared"}}catch(e){if(e&&e.name==="AbortError")return "cancelled"}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);return "downloaded";
+}
+const slug=s=>String(s||"pet").replace(/\(example\)/i,"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()||"pet";
+
+/* ---------- 1. vet summary ---------- */
+function summaryHTML(p,forFile){
+  const vax=sortBy(p.vaccines||[],"date",-1),ws=sortBy((p.weights||[]).filter(w=>w.lb!==""&&w.lb!=null),"date").slice(-6).reverse();
+  const visits=sortBy(p.visits||[],"date",-1).slice(0,6),qs=openQs(p),checks=sortBy(p.checks||[],"date",-1).slice(0,5);
+  const row=(k,v)=>v?`<tr><th>${k}</th><td>${esc(v)}</td></tr>`:"";
+  const w=x=>prefs.unit==="kg"?(x*KG).toFixed(1)+" kg":(+x).toFixed(1)+" lb";
+  const docs=(p.docs||[]).map(d=>esc(d.title||d.kind)+(d.date?" ("+fmtD(d.date)+")":"")).join(", ");
+  return `<div class="sum">
+  <div class="sumhead">${p.photo?`<img src="${p.photo}" alt="">`:""}<div><div class="sumkicker">Pet health summary · ${fmtD(todayISO())}</div><h1>${esc(p.name)}</h1><div>${[p.species,p.breed,p.sex,p.birthday?"Born "+fmtD(p.birthday)+" ("+ageText(p.birthday)+")":""].filter(Boolean).map(esc).join(" · ")}</div></div></div>
+  <h2>Details</h2><table>${row("Microchip",p.microchip)}${row("Colour / markings",p.color)}${row("Vet",[p.vetName,p.vetPhone].filter(Boolean).join(" · "))}${row("Insurance",p.insurance)}${row("Food",p.food)}${row("Allergies & conditions",p.allergies||"None recorded")}</table>
+  <h2>Vaccines</h2>${vax.length?`<table class="grid"><tr><th>Vaccine</th><th>Given</th><th>Next due</th></tr>${vax.map(v=>`<tr><td>${esc(v.name)}</td><td>${fmtD(v.date)}</td><td>${superseded(p,v)?"—":v.due?fmtD(v.due):"—"}</td></tr>`).join("")}</table>`:"<p>None recorded.</p>"}
+  <h2>Medications &amp; preventives</h2>${(p.meds||[]).length?`<table class="grid"><tr><th>Name</th><th>Dose</th><th>How often</th><th>Last given</th></tr>${p.meds.map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.dose||"")}</td><td>${m.every?"Every "+m.every+" days":"As needed"}</td><td>${m.last?fmtD(m.last):"—"}</td></tr>`).join("")}</table>`:"<p>None recorded.</p>"}
+  <h2>Weight</h2>${ws.length?`<table class="grid"><tr><th>Date</th><th>Weight</th><th>Age</th></tr>${ws.map(x=>`<tr><td>${fmtD(x.date)}</td><td>${w(x.lb)}</td><td>${p.birthday?esc(ageAt(p.birthday,x.date).split(" · ")[1]||""):""}</td></tr>`).join("")}</table>`:"<p>None recorded.</p>"}
+  <h2>Recent vet visits</h2>${visits.length?`<table class="grid"><tr><th>Date</th><th>Reason</th><th>Notes</th></tr>${visits.map(x=>`<tr><td>${fmtD(x.date)}</td><td>${esc(x.reason||"")}</td><td>${esc([x.clinic,x.notes].filter(Boolean).join(" · "))}</td></tr>`).join("")}</table>`:"<p>None recorded.</p>"}
+  ${checks.length?`<h2>Recent health notes</h2><table class="grid"><tr><th>Date</th><th>Noticed</th><th>Notes</th></tr>${checks.map(c=>`<tr><td>${fmtD(c.date)}</td><td>${esc((c.signs||[]).join(", "))}</td><td>${esc(c.notes||"")}</td></tr>`).join("")}</table>`:""}
+  ${qs.length?`<h2>Questions for the vet</h2><ul>${qs.map(q=>`<li>${esc(q.text)}</li>`).join("")}</ul>`:""}
+  ${docs?`<h2>Documents on file</h2><p>${docs}</p>`:""}
+  <p class="sumfoot">Made with Pupdate. Records entered by the owner.</p></div>`;
+}
+const SUMMARY_CSS=`.sum{font:15px/1.45 -apple-system,system-ui,"Helvetica Neue",Arial,sans-serif;color:#1d2a30;max-width:760px}
+.sum h1{margin:2px 0 4px;font-size:30px}.sum h2{font-size:17px;margin:22px 0 8px;padding-bottom:4px;border-bottom:2px solid #cfe3dc;color:#2b6c63}
+.sumhead{display:flex;gap:16px;align-items:center}.sumhead img{width:84px;height:84px;border-radius:50%;object-fit:cover}
+.sumkicker{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5d6f77}
+.sum table{border-collapse:collapse;width:100%}.sum th,.sum td{text-align:left;padding:6px 8px;vertical-align:top;border-bottom:1px solid #e3ebe8}
+.sum table:not(.grid) th{width:34%;color:#5d6f77;font-weight:600}.sum .grid th{background:#eef5f2;font-size:13px}
+.sum ul{margin:0;padding-left:20px}.sumfoot{margin-top:24px;font-size:12px;color:#7a8a91}`;
+function viewSummary(p){
+  return `<div class="sechead noprint"><button class="link" data-act="tab" data-tab="profile">‹ Back</button></div>
+  <div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="sum-share">Share as a file</button><button class="btn ghost" data-act="sum-print">Print or save as PDF</button></div>
+  <p class="note noprint" style="margin:0">Send this to a new vet, groomer, daycare or pet sitter. "Share as a file" works with Messages, Mail and AirDrop.</p>
+  <div class="card sumcard">${summaryHTML(p)}</div>`;
+}
+async function shareSummary(p){
+  const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(p.name)} – health summary</title><style>body{margin:0;padding:24px;background:#fff}${SUMMARY_CSS}@media print{body{padding:0}}</style></head><body>${summaryHTML(p,true)}</body></html>`;
+  const r=await shareOrDownload(new Blob([html],{type:"text/html"}),slug(p.name)+"-health-summary.html",p.name+" health summary");
+  if(r==="downloaded")toast("Summary file saved");
+}
+
+/* ---------- 2. documents ---------- */
+const DOC_KINDS=["Rabies certificate","CDC import receipt","Vaccine record","Vet invoice","Insurance","Registration / CKC papers","Lab results","Other"];
+function docsSection(p){
+  const docs=sortBy(p.docs||[],"date",-1);
+  return `<section class="sec"><div class="sechead"><h3>Documents</h3><button class="link" data-act="doc-new">+ Add</button></div>
+  <div class="card">${docs.length?`<div class="docgrid">${docs.map(d=>`<button class="doc" data-act="doc-view" data-id="${d.id}">${d.mime==="application/pdf"?'<span class="pdf">PDF</span>':`<img data-media="docs/${d.id}" alt="">`}<span class="dt">${esc(d.title||d.kind)}</span><span class="dd">${d.date?fmtShort(d.date):esc(d.kind)}</span></button>`).join("")}</div>`:'<div class="empty">Keep photos of the rabies certificate, CDC receipt, vet invoices and insurance papers here, so they\'re on your phone at the vet or the border.</div>'}</div></section>`;
+}
+function docForm(d,presetKind){
+  const p=cur();const fields=[{k:"kind",label:"Type",type:"select",options:DOC_KINDS,half:true},{k:"date",label:"Date on document",type:"date",def:todayISO(),half:true},{k:"title",label:"Name (optional)",ph:"e.g. Rabies 1-year, Dr. Patel"},{k:"notes",label:"Notes",type:"textarea"}];
+  if(!d)fields.unshift({k:"file",label:"Photo or PDF",type:"docfile"});
+  const o={title:d?"Edit document":"Add document",fields,values:Object.assign({kind:presetKind||"Rabies certificate"},d||{}),
+    async onSave(v){
+      if(d){update(c=>{const x=c.docs.find(y=>y.id===d.id);Object.assign(x,{kind:v.kind,date:v.date,title:v.title,notes:v.notes})});toast("Saved");return}
+      const f=o.docFile;if(!f){toast("Choose a photo or PDF first.");return}
+      try{const id=uid();let blob=f,mime=f.type;
+        if(/^image\//.test(f.type)){blob=await resizeImage(f,1800,.82);mime="image/jpeg"}
+        else if(f.type!=="application/pdf"){toast("Choose a photo or a PDF.");return}
+        if(blob.size>12e6){toast("That file is too big (over 12 MB).");return}
+        await mediaPut("docs",id,{blob,mime});
+        update(c=>{c.docs=c.docs||[];c.docs.push({id,kind:v.kind,date:v.date,title:v.title,notes:v.notes,mime,size:blob.size})});toast("Document saved");
+      }catch(e){toast("That file couldn't be saved. Try a photo instead.")}
+    },
+    onDelete:d?async()=>{try{await mediaDel("docs",d.id)}catch(e){}Media.drop("docs",d.id);update(c=>{c.docs=c.docs.filter(x=>x.id!==d.id)});toast("Deleted")}:null,delLabel:"Delete this document from the phone?"};
+  openForm(o);
+}
+async function viewDoc(d){
+  const p=cur();formCtx={};
+  const url=await Media.url("docs",d.id);
+  $("#panel").innerHTML=`<div style="display:flex;flex-direction:column;gap:12px"><h3>${esc(d.title||d.kind)}</h3><div class="s" style="color:var(--muted)">${esc(d.kind)}${d.date?" · "+fmtD(d.date):""}${d.notes?" · "+esc(d.notes):""}</div>
+   ${!url?'<div class="empty">This file isn\'t on this phone. Restore a backup that includes documents.</div>':d.mime==="application/pdf"?`<a class="btn ghost" style="text-align:center;text-decoration:none" href="${url}" target="_blank" rel="noopener">Open PDF</a>`:`<div class="docview"><img src="${url}" alt="${esc(d.title||d.kind)}"></div>`}
+   <div style="display:flex;gap:8px;flex-wrap:wrap">${url?`<button class="btn small" data-act="doc-share" data-id="${d.id}">Share</button>`:""}<button class="btn ghost small" data-act="doc-edit" data-id="${d.id}">Edit</button><button class="btn ghost small" data-act="close" style="margin-left:auto">Close</button></div></div>`;
+  $("#sheet").hidden=false;
+}
+const hasDoc=(p,kind)=>(p.docs||[]).find(d=>d.kind===kind);
+
+/* ---------- 3. care routine ---------- */
+const TASK_PRESETS=[["Nail trim",14],["Brush teeth",1],["Brush coat",3],["Bath",30],["Clean ears",7],["Grooming appointment",42],["Wash bedding",14],["Check for ticks",1]];
+const taskNext=t=>t.last&&t.every?addDays(t.last,t.every):null;
+function tasksSection(p){
+  const ts=p.tasks||[];const used=new Set(ts.map(t=>t.name));
+  return `<section class="sec"><div class="sechead"><h3>Care routine</h3><button class="link" data-act="task-new">+ Add</button></div>
+  <div class="card list">${ts.length?ts.map(t=>{const n=taskNext(t);const d=daysUntil(n);const st=!t.last?["mute","Not started"]:d<0?["bad",Math.abs(d)+"d late"]:d===0?["warn","Today"]:d===1?["warn","Tomorrow"]:["good",fmtShort(n)];
+    return `<div class="row"><div class="main"><div class="t">${esc(t.name)}</div><div class="s">Every ${t.every} day${t.every==1?"":"s"}${t.last?" · last "+fmtShort(t.last):""}</div></div><span class="pill ${st[0]}">${st[1]}</span><button class="btn small ghost" data-act="task-done" data-id="${t.id}">Done</button><button class="icon-btn" data-act="task-remind" data-id="${t.id}" aria-label="Repeating reminder">${I.bell}</button><button class="icon-btn" data-act="task-edit" data-id="${t.id}" aria-label="Edit">${I.edit}</button></div>`}).join(""):'<div class="empty">Nail trims, teeth, baths, ear cleaning: add the routine and tap Done each time.</div>'}
+  <div class="presets">${TASK_PRESETS.filter(([n])=>!used.has(n)).slice(0,ts.length?4:8).map(([n,e])=>`<button class="chipbtn" data-act="task-preset" data-n="${esc(n)}" data-e="${e}">+ ${esc(n)}</button>`).join("")}</div></div></section>`;
+}
+const TASK_FIELDS=[{k:"name",label:"Task",req:true,ph:"Nail trim"},{k:"every",label:"Repeat every (days)",type:"number",req:true,def:14,half:true},{k:"last",label:"Last done",type:"date",half:true},{k:"notes",label:"Notes",type:"textarea",ph:"Tips, products, who does it"}];
+
+/* ---------- 4. health check-in ---------- */
+const SIGNS=["Not eating well","Low energy","Vomiting","Diarrhea","Scratching / itchy","Limping","Coughing / sneezing","Drinking a lot","Eyes / ears","Skin / lump","Behaviour change","Other"];
+function checksSection(p){
+  const cs=sortBy(p.checks||[],"date",-1);
+  return `<section class="sec"><div class="sechead"><h3>Health notes</h3><button class="link" data-act="check-new">+ Something's off</button></div>
+  <div class="card list">${cs.length?cs.slice(0,6).map(c=>`<div class="row"><div class="date"><b>${parseD(c.date).getDate()}</b><small>${MON[parseD(c.date).getMonth()]}</small></div><div class="main"><div class="tags">${(c.signs||[]).map(s=>`<span class="tag2">${esc(s)}</span>`).join("")}</div>${c.notes?`<div class="s">${esc(c.notes)}</div>`:""}</div><button class="icon-btn" data-act="check-edit" data-id="${c.id}" aria-label="Edit">${I.edit}</button></div>`).join("")+(cs.length>6?`<div class="s" style="color:var(--muted);padding-top:8px">${cs.length-6} older notes are in the vet summary.</div>`:""):'<div class="empty">When something seems off, note it here with the date. One tap adds it to your vet questions.</div>'}</div></section>`;
+}
+function checkForm(c){
+  const fields=[{k:"date",label:"Date",type:"date",def:todayISO(),req:true},{k:"signs",label:"What did you notice?",type:"chips",options:SIGNS},{k:"notes",label:"Details",type:"textarea",ph:"How long, how often, anything that seems to trigger it"}];
+  if(!c)fields.push({k:"ask",label:"Add to my vet questions",type:"check",def:true});
+  openForm({title:c?"Edit health note":"Something's off",fields,values:c||{},
+    onSave(v){const signs=v.signs||[];if(!signs.length&&!v.notes){toast("Pick at least one sign or add details.");return}
+      update(x=>{x.checks=x.checks||[];if(c){Object.assign(x.checks.find(y=>y.id===c.id),{date:v.date,signs,notes:v.notes})}else{x.checks.push({id:uid(),date:v.date,signs,notes:v.notes});
+        if(v.ask){x.questions=x.questions||[];x.questions.push({id:uid(),text:fmtShort(v.date)+": "+[signs.join(", "),v.notes].filter(Boolean).join(" – "),date:todayISO(),status:"open"})}}});
+      toast(c?"Saved":v.ask?"Saved and added to your vet questions":"Saved")},
+    onDelete:c?()=>{update(x=>{x.checks=x.checks.filter(y=>y.id!==c.id)});toast("Deleted")}:null,delLabel:"Delete this health note?"});
+}
+
+/* ---------- 5. training & socialization ---------- */
+const COMMANDS=[["name","Name recognition"],["sit","Sit"],["down","Down"],["stay","Stay"],["come","Come (recall)"],["leave","Leave it"],["drop","Drop it"],["wait","Wait at doors"],["leash","Loose-leash walking"],["crate","Crate"],["settle","Settle on a mat"],["off","Off"]];
+const TSTATES=["","learning","solid"];
+const SOCIAL=[["People",[["men","Men with beards or hats"],["kids","Children"],["uniform","People in uniforms or helmets"],["strangers","Friendly strangers"]]],
+ ["Animals",[["calmdog","Calm adult dogs"],["pups","Other puppies"],["cats","Cats"]]],
+ ["Places",[["car","Car rides"],["vetvisit","Happy visit to the vet"],["store","Pet store"],["street","Busy street"],["park","Park"]]],
+ ["Sounds",[["vacuum","Vacuum"],["traffic","Traffic"],["storm","Thunder or fireworks (recording)"],["doorbell","Doorbell and knocking"]]],
+ ["Handling",[["paws","Paws and nails"],["ears","Ears"],["mouth","Mouth and teeth"],["bathh","Bath"],["brush","Brushing"],["collar","Collar grab"]]],
+ ["Surfaces",[["grass","Grass"],["gravel","Gravel"],["stairs","Stairs"],["slippery","Slippery floors"],["water","Shallow water"]]]];
+const SOCIAL_COUNT=SOCIAL.reduce((n,g)=>n+g[1].length,0);
+function trainingSection(p){
+  const tr=p.train||{},custom=p.trainCustom||[];const all=COMMANDS.map(([id,n])=>({id,n})).concat(custom.map(c=>({id:c.id,n:c.name,custom:1})));
+  const solid=all.filter(c=>(tr[c.id]||{}).s==="solid").length;
+  const sc=p.social||{};const done=Object.keys(sc).length;const a=ageParts(p.birthday);
+  return `<section class="sec"><div class="sechead"><h3>Training</h3><span class="eyebrow">${solid} of ${all.length} solid</span></div>
+  <div class="card list">${all.map(c=>{const st=(tr[c.id]||{}).s||"";return `<div class="row"><div class="main"><div class="t">${esc(c.n)}</div>${st==="solid"&&tr[c.id].d?`<div class="s">Solid since ${fmtShort(tr[c.id].d)}</div>`:""}</div><button class="tstate ${st||"none"}" data-act="train" data-id="${c.id}">${st==="solid"?"✓ Solid":st==="learning"?"Learning":"Not started"}</button>${c.custom?`<button class="icon-btn" data-act="train-del" data-id="${c.id}" aria-label="Remove">✕</button>`:""}</div>`}).join("")}
+   <form id="tform" class="qform" style="padding-top:10px"><input id="t_text" placeholder="Add your own, e.g. Shake a paw" aria-label="New command" autocomplete="off"><button class="btn small" type="submit">Add</button></form></div>
+  <p class="note" style="margin:0">Tap a command to move it from Not started to Learning to Solid.</p></section>
+  ${isDog(p)?`<section class="sec"><div class="sechead"><h3>Socialization</h3><span class="eyebrow">${done} of ${SOCIAL_COUNT}</span></div>
+  <div class="card"><div class="bar big"><i style="width:${(done/SOCIAL_COUNT*100).toFixed(0)}%"></i></div>
+  ${a&&a.weeks<20?`<p class="s" style="color:var(--muted);margin:10px 0 0">The main socialization window closes around 14–16 weeks, so calm, positive new experiences matter most right now. Keep it short and fun.</p>`:""}
+  ${SOCIAL.map(([g,items])=>`<div class="sgroup"><div class="eyebrow">${g}</div><div class="schips">${items.map(([id,n])=>`<button class="schip${sc[id]?" on":""}" data-act="social" data-id="${id}" aria-pressed="${!!sc[id]}">${sc[id]?"✓ ":""}${esc(n)}</button>`).join("")}</div></div>`).join("")}</div></section>`:""}`;
+}
+
+/* ---------- 6. milestones ---------- */
+const MOMENT_PRESETS=["First day home","First bath","First vet visit","First walk","First swim","Lost first tooth","Learned sit","Birthday","Gotcha day"];
+function momentsSection(p){
+  const ms=sortBy(p.moments||[],"date",-1);const used=new Set(ms.map(m=>m.title));
+  return `<section class="sec"><div class="sechead"><h3>Milestones</h3><button class="link" data-act="moment-new">+ Add</button></div>
+  ${ms.length?`<div class="timeline">${ms.map(m=>`<button class="moment" data-act="moment-edit" data-id="${m.id}">${m.photo?`<img data-media="photos/${m.id}" alt="">`:`<span class="mdot"></span>`}<span class="mbody"><span class="mt">${esc(m.title)}</span><span class="ms">${fmtD(m.date)}${p.birthday&&m.date>=p.birthday?" · "+esc((ageAt(p.birthday,m.date).split(" · ")[1])||""):""}</span>${m.note?`<span class="mn">${esc(m.note)}</span>`:""}</span></button>`).join("")}</div>`:'<div class="card"><div class="empty">Save the firsts with a photo: first day home, first bath, first swim. They\'re shown with how old your pup was.</div></div>'}
+  <div class="presets">${MOMENT_PRESETS.filter(t=>!used.has(t)).slice(0,5).map(t=>`<button class="chipbtn" data-act="moment-preset" data-t="${esc(t)}">+ ${esc(t)}</button>`).join("")}</div></section>`;
+}
+function momentForm(m,presetTitle){
+  const fields=[{k:"title",label:"Milestone",req:true,list:"momentnames"},{k:"date",label:"Date",type:"date",def:todayISO(),req:true},{k:"pic",label:"Photo",type:"momentpic"},{k:"note",label:"Note",type:"textarea",ph:"What happened, how they reacted"}];
+  const o={title:m?"Edit milestone":"New milestone",fields,values:Object.assign({title:presetTitle||""},m||{}),
+    async onSave(v){const id=m?m.id:uid();let photo=m?!!m.photo:false;
+      if(o.picFile){try{const blob=await resizeImage(o.picFile,1200,.82);await mediaPut("photos",id,{blob,mime:"image/jpeg"});Media.drop("photos",id);photo=true}catch(e){toast("That photo couldn't be saved.")}}
+      if(o.picRemove){try{await mediaDel("photos",id)}catch(e){}Media.drop("photos",id);photo=false}
+      update(c=>{c.moments=c.moments||[];const it={id,title:v.title,date:v.date,note:v.note,photo};const i=c.moments.findIndex(x=>x.id===id);if(i<0)c.moments.push(it);else c.moments[i]=it});toast("Saved")},
+    onDelete:m?async()=>{try{await mediaDel("photos",m.id)}catch(e){}Media.drop("photos",m.id);update(c=>{c.moments=c.moments.filter(x=>x.id!==m.id)});toast("Deleted")}:null,delLabel:"Delete this milestone?"};
+  openForm(o);
+}
+
+/* ---------- 7. expenses ---------- */
+const EXP_CATS=["Food","Treats & toys","Medication","Insurance","Grooming supplies","Gear","Licence","Training","Other"];
+function costEntries(scopePet){
+  const out=[];const t=todayISO();
+  (scopePet?[scopePet]:S.pets).forEach(pt=>{
+    (pt.appts||[]).forEach(a=>{if(a.cost)out.push({date:a.when.slice(0,10),cat:a.type,amt:Number(a.cost)||0,pt,spent:a.done||isPast(a),src:"appt"})});
+    (pt.expenses||[]).forEach(e=>{out.push({date:e.date,cat:e.cat,amt:Number(e.amount)||0,pt,spent:e.date<=t,src:"exp",e})});
+  });return out;
+}
+function costsSection(scopePet){
+  const now=new Date();const ym=iso(now).slice(0,7),y=String(now.getFullYear());
+  const all=costEntries(scopePet);const spent=all.filter(x=>x.spent);const sum=a=>a.reduce((s,x)=>s+x.amt,0);
+  const mTot=sum(spent.filter(x=>x.date.startsWith(ym))),yTot=sum(spent.filter(x=>x.date.startsWith(y))),tot=sum(spent),booked=sum(all.filter(x=>!x.spent));
+  const yr=spent.filter(x=>x.date.startsWith(y));const cats=[...new Set(yr.map(x=>x.cat))];
+  const byCat=cats.map(c=>[c,sum(yr.filter(x=>x.cat===c))]).filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]);
+  const byPet=S.pets.map(pt=>[pt,sum(yr.filter(x=>x.pt.id===pt.id))]).filter(r=>r[1]>0);
+  const mx=Math.max(1,...byCat.map(r=>r[1])),mxp=Math.max(1,...byPet.map(r=>r[1]));
+  const recent=all.filter(x=>x.src==="exp").sort((a,b)=>a.date<b.date?1:-1).slice(0,5);
+  return `<section class="sec"><div class="sechead"><h3>Costs</h3><button class="link" data-act="exp-new">+ Add expense</button></div>
+   <div class="stats"><div class="stat"><span class="eyebrow">${MONL[now.getMonth()]}</span><b>${money(mTot)}</b><small>this month</small></div><div class="stat"><span class="eyebrow">${y}</span><b>${money(yTot)}</b><small>this year</small></div><div class="stat"><span class="eyebrow">All time</span><b>${money(tot)}</b><small>${booked?money(booked)+" booked ahead":scopePet?esc(scopePet.name):"all pets"}</small></div></div>
+   <div class="card" style="display:flex;flex-direction:column;gap:12px">${byCat.length?`<div class="eyebrow">${y} by category</div>`+byCat.map(([t,v])=>`<div class="barrow"><span>${esc(t)}</span><div class="bar"><i style="width:${(v/mx*100).toFixed(1)}%"></i></div><b>${money(v)}</b></div>`).join("")+(byPet.length>1&&!scopePet?`<div class="eyebrow" style="margin-top:6px">${y} by pet</div>`+byPet.map(([pt,v])=>`<div class="barrow"><span>${esc(pt.name)}</span><div class="bar"><i style="width:${(v/mxp*100).toFixed(1)}%;background:${petColor(pt)}"></i></div><b>${money(v)}</b></div>`).join(""):""):`<div class="empty">Add costs to appointments, or add expenses like food, insurance and toys, to see what you spend.</div>`}</div>
+   ${recent.length?`<div class="card list">${recent.map(x=>`<div class="row"><div class="date"><b>${parseD(x.date).getDate()}</b><small>${MON[parseD(x.date).getMonth()]}</small></div><div class="main"><div class="t">${esc(x.e.note||x.cat)}</div><div class="s"><span class="petdot" style="background:${petColor(x.pt)}"></span>${esc(x.pt.name)} · ${esc(x.cat)}</div></div><span class="pill mute">${money(x.amt)}</span><button class="icon-btn" data-act="exp-edit" data-id="${x.e.id}" aria-label="Edit">${I.edit}</button></div>`).join("")}</div>`:""}</section>`;
+}
+function findExp(id){for(const pt of S.pets){const e=(pt.expenses||[]).find(x=>x.id===id);if(e)return {e,pt}}return null}
+function expForm(found){
+  const e=found&&found.e,pt0=found?found.pt:cur();const fields=[];
+  if(S.pets.length>1)fields.push({k:"pet",label:"Pet",type:"select",options:S.pets.map(x=>({v:x.id,l:x.name}))});
+  fields.push({k:"amount",label:"Amount ($)",type:"number",req:true,half:true},{k:"date",label:"Date",type:"date",def:todayISO(),req:true,half:true},{k:"cat",label:"Category",type:"select",options:EXP_CATS},{k:"note",label:"What",ph:"30 lb bag of puppy food"});
+  openForm({title:e?"Edit expense":"Add expense",fields,values:Object.assign({cat:"Food"},e||{},{pet:pt0.id}),
+    onSave(v){const pid=v.pet||pt0.id;const it=Object.assign({},e||{id:uid()},{amount:v.amount,date:v.date,cat:v.cat,note:v.note});
+      if(found&&found.pt.id!==pid){const old=clone(found.pt);old.expenses=old.expenses.filter(x=>x.id!==it.id);persistPet(old)}
+      const tgt=clone(S.pets.find(x=>x.id===pid));tgt.expenses=tgt.expenses||[];const i=tgt.expenses.findIndex(x=>x.id===it.id);if(i<0)tgt.expenses.push(it);else tgt.expenses[i]=it;persistPet(tgt);toast("Saved · "+money(v.amount))},
+    onDelete:e?()=>{const c=clone(found.pt);c.expenses=c.expenses.filter(x=>x.id!==e.id);persistPet(c);toast("Deleted")}:null,delLabel:"Delete this expense?"});
+}
+
+/* ---------- 8. family sharing (by file) + media in backups ---------- */
+const MERGE_LISTS=["weights","vaccines","meds","visits","appts","questions","checks","tasks","expenses","moments","docs","trainCustom"];
+function mergePet(mine,theirs){
+  const newer=(theirs.updatedAt||0)>(mine.updatedAt||0)?theirs:mine,older=newer===mine?theirs:mine;
+  const out=clone(newer);let added=0;
+  MERGE_LISTS.forEach(k=>{const m=new Map();(older[k]||[]).forEach(x=>m.set(x.id,x));(newer[k]||[]).forEach(x=>m.set(x.id,x));
+    const mineIds=new Set((mine[k]||[]).map(x=>x.id));(theirs[k]||[]).forEach(x=>{if(!mineIds.has(x.id))added++});out[k]=[...m.values()]});
+  ["train","social"].forEach(k=>{out[k]=Object.assign({},older[k]||{},newer[k]||{})});
+  out.updatedAt=Math.max(mine.updatedAt||0,theirs.updatedAt||0);return {pet:out,added};
+}
+async function mediaForPets(pets){
+  const out={docs:{},photos:{}};
+  for(const p of pets){for(const d of (p.docs||[])){try{const r=await mediaGet("docs",d.id);if(r)out.docs[d.id]={mime:r.mime,data:await blobToDataURL(r.blob)}}catch(e){}}
+    for(const m of (p.moments||[])){if(!m.photo)continue;try{const r=await mediaGet("photos",m.id);if(r)out.photos[m.id]={mime:r.mime,data:await blobToDataURL(r.blob)}}catch(e){}}}
+  return out;
+}
+async function restoreMedia(media){if(!media)return;for(const st of ["docs","photos"]){for(const id in (media[st]||{})){try{const r=media[st][id];await mediaPut(st,id,{blob:dataURLToBlob(r.data),mime:r.mime});Media.drop(st,id)}catch(e){}}}}
+async function sendPet(p){
+  const data={app:"pupdate",version:DATA_VERSION,appVersion:APP_VERSION,kind:"pet-share",exportedAt:new Date().toISOString(),pets:[p]};
+  const allClips=await clipsForBackup();if(allClips[p.id])data.clips={[p.id]:allClips[p.id]};
+  data.media=await mediaForPets([p]);
+  const r=await shareOrDownload(new Blob([JSON.stringify(data)],{type:"application/json"}),slug(p.name)+"-pupdate.json",p.name+" (Pupdate)");
+  if(r!=="cancelled")toast(r==="shared"?"Sent "+p.name:"File saved: "+slug(p.name)+"-pupdate.json");
+}
+function familySection(){
+  return `<section class="sec"><div class="sechead"><h3>Share with family</h3></div>
+  <div class="card" style="display:flex;flex-direction:column;gap:12px"><p style="margin:0;color:var(--muted);font-size:14px">Send a pet to someone else's phone with AirDrop, Messages or email. They open Pupdate and tap <b>Restore from backup</b> to load it. Send it back and forth to stay in step: records from both phones are combined, and nothing is overwritten.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">${S.pets.map(p=>`<button class="btn small ghost" data-act="send-pet" data-id="${p.id}">Send ${esc(p.name)}</button>`).join("")||'<span class="empty">Add a pet first.</span>'}</div>
+  <p class="s" style="margin:0;color:var(--muted);font-size:13px">Good to know: something deleted on one phone can come back if the other phone still has it. Delete it on both.</p></div></section>`;
+}
+
 /* ---------- calendar, costs & reminders ---------- */
 const REMIND={"1 day before":1440,"2 days before":2880,"1 week before":10080,"1 hour before":60,"No reminder":0};
 const APPT_TYPES=["Vet","Grooming","Training","Daycare","Boarding","Other"];
@@ -802,16 +1099,6 @@ function viewCal(p){
     return `<div class="row">${showDate?`<div class="date"><b>${d.getDate()}</b><small>${MON[d.getMonth()]}</small></div>`:`<div class="time">${fmtTime(a.when)||"—"}</div>`}<div class="main"><div class="t">${esc(a.title||a.type)}</div><div class="s"><span class="petdot" style="background:${petColor(pt)}"></span>${esc(pt.name)} · ${esc(a.type)}${showDate&&fmtTime(a.when)?" · "+fmtTime(a.when):""}${a.where?" · "+esc(a.where):""}${a.type==="Vet"&&!a.done&&!past&&openQs(pt).length?` · <b>${openQs(pt).length} to ask</b>`:""}</div></div>${a.cost?`<span class="pill mute">${money(a.cost)}</span>`:""}${status}<button class="icon-btn" data-act="appt-edit" data-id="${a.id}" aria-label="Edit">${I.edit}</button></div>`};
   const upcoming=list.filter(x=>!x.a.done&&!isPast(x.a)).slice(0,5);
   const toLog=list.filter(x=>!x.a.done&&isPast(x.a)).reverse();
-  // costs
-  const now=new Date();const ym=iso(now).slice(0,7),y=String(now.getFullYear());
-  const spent=list.filter(x=>x.a.cost&&(x.a.done||isPast(x.a)));
-  const sum=arr=>arr.reduce((s,x)=>s+(Number(x.a.cost)||0),0);
-  const mTot=sum(spent.filter(x=>x.a.when.startsWith(ym))),yTot=sum(spent.filter(x=>x.a.when.startsWith(y))),all=sum(spent);
-  const booked=sum(list.filter(x=>x.a.cost&&!x.a.done&&!isPast(x.a)));
-  const yr=spent.filter(x=>x.a.when.startsWith(y));
-  const byType=APPT_TYPES.map(t=>[t,sum(yr.filter(x=>x.a.type===t))]).filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]);
-  const byPet=S.pets.map(pt=>[pt,sum(yr.filter(x=>x.pt.id===pt.id))]).filter(r=>r[1]>0);
-  const mx=Math.max(1,...byType.map(r=>r[1]));const mxp=Math.max(1,...byPet.map(r=>r[1]));
   return `<div class="sechead"><h3 style="font:800 30px/1.1 var(--display);margin:0">Calendar</h3><button class="btn" data-act="appt-new" data-d="${S.calDay}">+ Book</button></div>
   ${S.pets.length>1?`<div class="seg" role="group" aria-label="Show"><button class="${S.calScope==="all"?"on":""}" data-act="cal-scope" data-s="all">All pets</button><button class="${S.calScope==="pet"?"on":""}" data-act="cal-scope" data-s="pet">${esc(p.name)}</button></div>`:""}
   <div class="card calcard">
@@ -822,9 +1109,7 @@ function viewCal(p){
    <div class="card list">${dayList.length?dayList.map(x=>row(x,false)).join(""):`<div class="empty">Nothing booked. Tap "Add on this day" to book an appointment.</div>`}</div></section>
   ${toLog.length?`<section class="sec"><div class="sechead"><h3>Needs logging</h3><span class="eyebrow">${toLog.length} past</span></div><div class="card list">${toLog.map(x=>row(x,true)).join("")}</div><p class="note" style="margin:0">Tap "Log it" to mark an appointment done and record what it cost.</p></section>`:""}
   <section class="sec"><div class="sechead"><h3>Coming up</h3></div><div class="card list">${upcoming.length?upcoming.map(x=>row(x,true)).join(""):'<div class="empty">No upcoming appointments.</div>'}</div></section>
-  <section class="sec"><div class="sechead"><h3>Costs</h3><span class="eyebrow">${scopePet?esc(scopePet.name):"All pets"}</span></div>
-   <div class="stats"><div class="stat"><span class="eyebrow">${MONL[now.getMonth()]}</span><b>${money(mTot)}</b><small>this month</small></div><div class="stat"><span class="eyebrow">${y}</span><b>${money(yTot)}</b><small>this year</small></div><div class="stat"><span class="eyebrow">All time</span><b>${money(all)}</b><small>${booked?money(booked)+" booked ahead":"logged"}</small></div></div>
-   <div class="card" style="display:flex;flex-direction:column;gap:12px">${byType.length?`<div class="eyebrow">${y} by type</div>`+byType.map(([t,v])=>`<div class="barrow"><span>${t}</span><div class="bar"><i style="width:${(v/mx*100).toFixed(1)}%"></i></div><b>${money(v)}</b></div>`).join("")+(byPet.length>1&&!scopePet?`<div class="eyebrow" style="margin-top:6px">${y} by pet</div>`+byPet.map(([pt,v])=>`<div class="barrow"><span>${esc(pt.name)}</span><div class="bar"><i style="width:${(v/mxp*100).toFixed(1)}%;background:${petColor(pt)}"></i></div><b>${money(v)}</b></div>`).join(""):""):`<div class="empty">Add a cost to an appointment (or tap "Log it" after it happens) to see what you spend on vet, grooming, training and more.</div>`}</div></section>`;
+  ${costsSection(scopePet)}`;
 }
 
 function apptForm(found,presetDay){
@@ -856,7 +1141,7 @@ function logForm(found){
 }
 
 /* calendar files & links */
-const icsEsc=s=>String(s||"").replace(/\\/g,"\\\\").replace(/;/g,"\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n");
+const icsEsc=s=>String(s||"").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n");
 const icsTime=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";
 function eventInfo(a,pt){const s=parseD(a.when);const e=new Date(s.getTime()+3600000);
   const title=pt.name+" – "+(a.title?a.type+": "+a.title:a.type);
@@ -864,10 +1149,10 @@ function eventInfo(a,pt){const s=parseD(a.when);const e=new Date(s.getTime()+360
   const desc=[a.notes,a.cost?"Cost: "+money(a.cost):"",qs.length?"Questions for the vet:\n"+qs.map(q=>"• "+q.text).join("\n"):"","Added from Pupdate"].filter(Boolean).join("\n");return {s,e,title,desc}}
 function buildICS(a,pt){const {s,e,title,desc}=eventInfo(a,pt);const m=REMIND[a.remind]||0;
   const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Pupdate//Pet care//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:"+a.id+"@pawlette","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),"DTSTART:"+icsTime(s),"DTEND:"+icsTime(e),"SUMMARY:"+icsEsc(title)];
-  if(a.where)L.push("LOCATION:"+icsEsc(a.where));L.push("DESCRIPTION:"+icsEsc(desc));
+  if(a.where)L.push("LOCATION:"+icsEsc(a.where));L.push("DESCRIPTION:"+icsEsc(desc));if(a.rrule)L.push("RRULE:"+a.rrule);
   if(m)L.push("BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(title),"TRIGGER:-PT"+m+"M","END:VALARM");
   L.push("END:VEVENT","END:VCALENDAR");return L.join("\r\n")+"\r\n"}
-function googleLink(a,pt){const {s,e,title,desc}=eventInfo(a,pt);return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(title)+"&dates="+icsTime(s)+"/"+icsTime(e)+"&details="+encodeURIComponent(desc)+(a.where?"&location="+encodeURIComponent(a.where):"")}
+function googleLink(a,pt){const {s,e,title,desc}=eventInfo(a,pt);return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(title)+"&dates="+icsTime(s)+"/"+icsTime(e)+"&details="+encodeURIComponent(desc)+(a.where?"&location="+encodeURIComponent(a.where):"")+(a.rrule?"&recur="+encodeURIComponent("RRULE:"+a.rrule):"")}
 function saveICS(a,pt){
   const blob=new Blob([buildICS(a,pt)],{type:"text/calendar;charset=utf-8"});
   const name=(pt.name+"-"+(a.title||a.type)).replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()+".ics";
@@ -941,6 +1226,30 @@ document.addEventListener("click",e=>{
     case "cal-go":{calState();S.calDay=b.dataset.d;const d=parseD(S.calDay);S.calY=d.getFullYear();S.calM=d.getMonth();prefs.tab="cal";savePrefs();render();window.scrollTo(0,0);break}
     case "copy":{const v=b.dataset.v;try{navigator.clipboard.writeText(v).then(()=>toast("Copied"),()=>toast(v))}catch(err){toast(v)}break}
     case "close":closeSheet();break;
+    case "summary":prefs.lastTab=prefs.tab;prefs.tab="summary";savePrefs();render();window.scrollTo(0,0);break;
+    case "sum-print":try{window.print()}catch(err){toast("Printing isn't available here. Use Share as a file.")}break;
+    case "sum-share":shareSummary(p);break;
+    case "doc-new":closeSheet();docForm(null,b.dataset.kind);break;
+    case "doc-view":{const d=(p.docs||[]).find(x=>x.id===id);if(d)viewDoc(d);break}
+    case "doc-edit":{const d=(p.docs||[]).find(x=>x.id===id);if(d)docForm(d);break}
+    case "doc-share":{const d=(p.docs||[]).find(x=>x.id===id);if(d)mediaGet("docs",d.id).then(r=>r&&shareOrDownload(r.blob,slug(p.name)+"-"+slug(d.title||d.kind)+(d.mime==="application/pdf"?".pdf":".jpg"),d.title||d.kind));break}
+    case "task-new":listForm("tasks",null,"Add care task",TASK_FIELDS);break;
+    case "task-preset":update(c=>{c.tasks=c.tasks||[];c.tasks.push({id:uid(),name:b.dataset.n,every:+b.dataset.e,last:""})});toast("Added "+b.dataset.n+". Tap Done when you do it.");break;
+    case "task-edit":listForm("tasks",findIn("tasks",id),"Edit care task",TASK_FIELDS);break;
+    case "task-done":update(c=>{const t=c.tasks.find(x=>x.id===id);if(t)t.last=todayISO()});toast("Done · next "+fmtShort(addDays(todayISO(),(findIn("tasks",id)||{}).every||1)));break;
+    case "task-remind":{const t=findIn("tasks",id);if(t){const n=taskNext(t)||todayISO();remindSheet({id:"task-"+t.id,type:"Care",title:t.name,when:remindWhen(n)+"T09:00",remind:"1 hour before",rrule:"FREQ=DAILY;INTERVAL="+Math.max(1,+t.every||1)},p,false)}break}
+    case "check-new":checkForm(null);break;
+    case "check-edit":checkForm(findIn("checks",id));break;
+    case "train":update(c=>{c.train=c.train||{};const c0=(c.train[id]||{}).s||"";const nx=TSTATES[(TSTATES.indexOf(c0)+1)%3];if(nx)c.train[id]={s:nx,d:nx==="solid"?todayISO():""};else delete c.train[id]});break;
+    case "train-del":update(c=>{c.trainCustom=(c.trainCustom||[]).filter(x=>x.id!==id);if(c.train)delete c.train[id]});break;
+    case "social":update(c=>{c.social=c.social||{};if(c.social[id])delete c.social[id];else c.social[id]=todayISO()});break;
+    case "moment-new":momentForm(null);break;
+    case "moment-preset":momentForm(null,b.dataset.t);break;
+    case "moment-edit":momentForm(findIn("moments",id));break;
+    case "pic-remove":if(formCtx){formCtx.picRemove=true;formCtx.picFile=null;$("#pic_prev").textContent="+";b.remove()}break;
+    case "exp-new":expForm(null);break;
+    case "exp-edit":{const f=findExp(id);if(f)expForm(f);break}
+    case "send-pet":{const pt=S.pets.find(x=>x.id===id);if(pt)sendPet(pt);break}
     case "clip-remove":if(formCtx){if(formCtx.clipNew&&formCtx.clipNew.urls)formCtx.clipNew.urls.forEach(u=>URL.revokeObjectURL(u));formCtx.clipNew=null;formCtx.clipVideo=null;formCtx.clipUI={};renderClipPick()}break;
     case "backup":exportBackup();break;
     case "restore":$("#restoreFile").value="";$("#restoreFile").click();break;
@@ -955,6 +1264,8 @@ function openWeightEdit(w){
     onSave(v){update(c=>{const i=c.weights.findIndex(x=>x.id===w.id);c.weights[i]=Object.assign({},w,v)});toast("Saved")},
     onDelete(){update(c=>{c.weights=c.weights.filter(x=>x.id!==w.id)});toast("Deleted")}});
 }
+document.addEventListener("submit",e=>{if(e.target.id!=="tform")return;e.preventDefault();const t=$("#t_text").value.trim();if(!t){$("#t_text").focus();return}
+  update(c=>{c.trainCustom=c.trainCustom||[];c.trainCustom.push({id:"c"+uid(),name:t})});toast("Added "+t)});
 document.addEventListener("submit",e=>{if(e.target.id!=="qform")return;e.preventDefault();const t=$("#q_text").value.trim();if(!t){$("#q_text").focus();return}
   update(c=>{c.questions=c.questions||[];c.questions.push({id:uid(),text:t,date:todayISO(),status:"open"})});toast("Added to your vet list");setTimeout(()=>{const i=$("#q_text");i&&i.focus()},50)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden)closeSheet()});
